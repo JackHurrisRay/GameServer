@@ -8,23 +8,38 @@
 #include "./../core/JackBase64.h"
 #include "./../core/ClientObjectSystem.h"
 
+//////////////////////////////////////////////////////////////////////////
+NetworkSystem* _NETWORK_SYS = NULL;
+NetworkSystem* NetworkSystem::Instance()
+{
+	if( _NETWORK_SYS == NULL )
+	{
+		_NETWORK_SYS = new NetworkSystem;
+	}
+
+	return _NETWORK_SYS;
+}
+
+void NetworkSystem::Release()
+{
+	delete _NETWORK_SYS;
+	_NETWORK_SYS = NULL;
+}
 
 //////////////////////////////////////////////////////////////////////////
 NetworkSystem::NetworkSystem(void):
 	m_exitCommand(false)
 {
 	WSADATA wsaData;
-	WSAStartup(MAKEWORD(2,2), &wsaData);
+	int _hr = WSAStartup(MAKEWORD(2,2), &wsaData);
 
 	ClientObjectSystem::Instance();
-
-	m_buffTemp = new char[BUFFER_SIZE];
 }
 
 
 NetworkSystem::~NetworkSystem(void)
 {
-	delete[] m_buffTemp;
+	ClientObjectSystem::Release();
 }
 
 void NetworkSystem::cmdEnd()
@@ -354,12 +369,11 @@ DWORD WINAPI thread_main( LPVOID lpParam )
 DWORD WINAPI thread_worker( LPVOID lpParam )
 {
 	cout << "server work start......" << endl; 
+	const HANDLE _handle = lpParam;
 
 	NetworkSystem* _network = NetworkSystem::Instance();
-
 	_network->work();
-
-	_network->close_threadHandle((HANDLE)lpParam);
+	_network->close_threadHandle(_handle);
 
 	cout << "server work exit......" << endl; 
 

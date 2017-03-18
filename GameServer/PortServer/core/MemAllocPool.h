@@ -61,10 +61,13 @@ public:
 			std::cout << _INFO << std::endl;
 		}
 
+		m_lock.lock();
 		for(int i=0; i<_init_count; i++)
 		{
-			m_unuseList.push_back(new T);
+			T* t = new T;
+			m_unuseList.push_back(t);
 		}
+		m_lock.unlock();
 
 		if( _INFO )
 		{

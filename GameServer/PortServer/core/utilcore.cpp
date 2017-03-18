@@ -13,7 +13,7 @@ unsigned int GET_RAND()
 {
 	struct tm* _time = GET_CURRENT_TIME();
 	
-	unsigned long long _Result = rand();
+	unsigned int _Result = rand();
 	_Result += _time->tm_year + _time->tm_mon + _time->tm_mday;
 	_Result += _time->tm_hour + _time->tm_min + _time->tm_sec;
 

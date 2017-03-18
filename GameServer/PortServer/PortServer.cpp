@@ -34,10 +34,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 	//////////////////////////////////////////////////////////////////////////
+	NetworkSystem::Instance();
+
 	HANDLE hMainThread = CreateThread(NULL, 0, thread_exit, NetworkSystem::Instance(), 0, 0);
 	CloseHandle(hMainThread);
 
 	NetworkSystem::Instance()->start(1234);
+
+	NetworkSystem::Release();
 
 	//////////////////////////////////////////////////////////////////////////
 	int i;

@@ -6,15 +6,35 @@
 /* system                                                               */
 /************************************************************************/
 //////////////////////////////////////////////////////////////////////////
-ClientObjectSystem::ClientObjectSystem(void):
-	m_accountAlloc(2000)
+ClientObjectSystem* _CLIENT_OBJ_SYS = NULL;
+ClientObjectSystem* ClientObjectSystem::Instance()
 {
+	if( _CLIENT_OBJ_SYS == NULL )
+	{
+		_CLIENT_OBJ_SYS = new ClientObjectSystem;
+	}
+
+	return _CLIENT_OBJ_SYS;
+}
+
+void ClientObjectSystem::Release()
+{
+	delete _CLIENT_OBJ_SYS;
+	_CLIENT_OBJ_SYS = NULL;
+}
+
+ClientObjectSystem::ClientObjectSystem(void):
+	m_accountAlloc( NULL )
+{
+	m_accountAlloc = new BASE_OBJECT_ALLOC(2000);
+
+	return;
 }
 
 
 ClientObjectSystem::~ClientObjectSystem(void)
 {
-
+	delete m_accountAlloc;
 }
 
 void ClientObjectSystem::addBaseObject( PER_HANDLE_DATA* pPerHandle, PER_IO_DATA* pPerIo )
@@ -22,7 +42,7 @@ void ClientObjectSystem::addBaseObject( PER_HANDLE_DATA* pPerHandle, PER_IO_DATA
 	m_lockForAccountMap.lock();
 
 	//////////////////////////////////////////////////////////////////////////
-	BASE_OBJECT* _obj = m_accountAlloc.createData();
+	BASE_OBJECT* _obj = m_accountAlloc->createData();
 	_obj->reset();
 
 	_obj->_bridge_client = pPerHandle->s;
@@ -51,7 +71,7 @@ void ClientObjectSystem::delBaseObject(__BRIDGE _client)
 		_obj->release();
 
 		//////////////////////////////////////////////////////////////////////////
-		m_accountAlloc.releaseData(_obj);
+		m_accountAlloc->releaseData(_obj);
 	}
 
 	m_lockForAccountMap.unlock();

@@ -66,7 +66,6 @@ protected:
     SOCKET        m_listener;
 	HANDLE        m_hIocp;	
 	HANDLE_LIST   m_handleList;
-	char*         m_buffTemp;
 
 	NetworkSystem(void);
 	~NetworkSystem(void);
@@ -87,11 +86,8 @@ protected:
 
 public:
 
-	static NetworkSystem* Instance()
-	{
-		static NetworkSystem _network;
-		return &_network;
-	}
+	static NetworkSystem* Instance();
+	static void Release();
 
 	void start(int port);
 	void cmdEnd();
