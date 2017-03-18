@@ -26,7 +26,7 @@ void ClientObjectSystem::Release()
 ClientObjectSystem::ClientObjectSystem(void):
 	m_accountAlloc( NULL )
 {
-	m_accountAlloc = new BASE_OBJECT_ALLOC(MAX_CLIENT_CONN);
+	m_accountAlloc = new BASE_OBJECT_ALLOC(MAX_CLIENT_CONN, "CLIENT CONN ALLOC");
 
 	return;
 }

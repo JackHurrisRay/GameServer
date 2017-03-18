@@ -71,7 +71,7 @@ public:
 
 		if( _INFO )
 		{
-			std::cout << "----end alloc---" << std::endl;
+			std::cout << "----alloc:" << m_unuseList.size() << "---" << std::endl;
 		}
 	}
 
