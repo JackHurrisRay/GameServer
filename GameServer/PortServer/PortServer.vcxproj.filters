@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="network">
+      <UniqueIdentifier>{9b438d43-ac4b-4853-911a-d949522b1bbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{abccf41f-e04c-4c06-a2cd-e5593b15f7b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern">
+      <UniqueIdentifier>{27dd3f69-c9c3-4bdb-8c6e-6cc71f5f238c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{09200e32-096b-4d4a-9ed7-b57f8b55857f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json\cpp">
+      <UniqueIdentifier>{6550a141-5178-48eb-bb4e-0fdce9428976}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json\inc">
+      <UniqueIdentifier>{e8a07e79-ef3b-4f26-b484-c2d463ae8688}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{c00cc07a-5742-40a8-9150-bd5fe7c3221a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\protocal">
+      <UniqueIdentifier>{64165720-9ff1-44f6-b98f-c8a88045ce24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\room">
+      <UniqueIdentifier>{f27b124e-36c7-4617-baa4-d1e7bdfd8b0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\hall">
+      <UniqueIdentifier>{84483bab-c85d-4180-9d99-64569f0d96bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\logic">
+      <UniqueIdentifier>{ec19fa4b-a7e6-4243-9cf5-b2be91f8499d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{801cf741-280c-48a7-8b58-07d0ae2cff6a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="network\NetworkSystem.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="core\WebSocketSystem.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ClientObject.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\WebSocketCommon.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\JackBase64.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\SHA1.h">
+      <Filter>extern</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ClientObjectSystem.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\base64.h">
+      <Filter>extern</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\allocator.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\assertions.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\autolink.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\config.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\features.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\forwards.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\json.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\reader.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\value.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\version.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp-master\include\json\writer.h">
+      <Filter>json\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="game\protocal.h">
+      <Filter>game\protocal</Filter>
+    </ClInclude>
+    <ClInclude Include="game\PokeCard.h">
+      <Filter>game\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utilcore.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Player.h">
+      <Filter>game\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="common\JACK_LIST.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="game\GameRoom.h">
+      <Filter>game\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="game\game_common.h">
+      <Filter>game\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ProtocalFactory.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\MemAllocPool.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="game\msg_c2s_process.h">
+      <Filter>game\protocal</Filter>
+    </ClInclude>
+    <ClInclude Include="game\message.h">
+      <Filter>game\protocal</Filter>
+    </ClInclude>
+    <ClInclude Include="game\GameDouNiu.h">
+      <Filter>game\logic</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PortServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="network\NetworkSystem.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="core\WebSocketSystem.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ClientObject.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\WebSocketCommon.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\JackBase64.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\SHA1.cpp">
+      <Filter>extern</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ClientObjectSystem.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\base64.cpp">
+      <Filter>extern</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp-master\src\lib_json\json_reader.cpp">
+      <Filter>json\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp-master\src\lib_json\json_value.cpp">
+      <Filter>json\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp-master\src\lib_json\json_writer.cpp">
+      <Filter>json\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="game\PokeCard.cpp">
+      <Filter>game\logic</Filter>
+    </ClCompile>
+    <ClCompile Include="core\utilcore.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="game\Player.cpp">
+      <Filter>game\logic</Filter>
+    </ClCompile>
+    <ClCompile Include="game\GameRoom.cpp">
+      <Filter>game\logic</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ProtocalFactory.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="game\msg_c2s_process.cpp">
+      <Filter>game\protocal</Filter>
+    </ClCompile>
+    <ClCompile Include="game\GameDouNiu.cpp">
+      <Filter>game\logic</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
