@@ -153,6 +153,9 @@
     <ClInclude Include="game\GameDouNiu.h">
       <Filter>game\logic</Filter>
     </ClInclude>
+    <ClInclude Include="game\message_douniu.h">
+      <Filter>game\protocal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

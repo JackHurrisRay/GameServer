@@ -109,6 +109,7 @@
     <ClInclude Include="game\GameRoom.h" />
     <ClInclude Include="game\game_common.h" />
     <ClInclude Include="game\message.h" />
+    <ClInclude Include="game\message_douniu.h" />
     <ClInclude Include="game\msg_c2s_process.h" />
     <ClInclude Include="game\Player.h" />
     <ClInclude Include="game\PokeCard.h" />

@@ -32,9 +32,6 @@ enum ENUM_ROOM_ERROR
 };
 
 //////////////////////////////////////////////////////////////////////////
-struct BASE_PLAYER;
-class  CPokeCard;
-
 enum ENUM_GAME_ROOM_TYPE
 {
 	EGRT_NONE = 0,          //该类型不可用
@@ -97,7 +94,6 @@ struct BASE_ROOM
 	//////////////////////////////////////////////////////////////////////////
 	BASE_PLAYER*          _Players[MAX_PLAYER_IN_ROOM];                     //
 	unsigned char         _AgreeDisband[MAX_PLAYER_IN_ROOM];                //0:初始状态 1:同意 2不同意
-	CPokeCard*            _CardPool;                                        //
 
 	BASE_ROOM();
 	void initData();

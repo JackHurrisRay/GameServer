@@ -54,10 +54,19 @@ enum ENUM_GAME_PROTOCAL
 	/*                                                                      */
 	/************************************************************************/
 	//////////////////////////////////////////////////////////////////////////
-	EGP_C2S_STARTGAME              = EGP_START__GAME + 10,          //开始游戏
+	EGP_C2S_STARTGAME              = EGP_START__GAME + 10,          //开始游戏,则玩家加入当前房间的游戏列表中
 	EGP_S2C_ALL_STARTGAME          = EGP_START__GAME + 11, 
 
+	EGP_C2S_FIGHT_ZHUANG           = EGP_START__GAME + 20,          //抢庄协议，抢庄后不可再抢
+	EGP_S2C_FIGHT_ZHUANG           = EGP_START__GAME + 21,
 
+	EGP_C2S_ADD_DOUBLE_SCORE       = EGP_START__GAME + 22,          //加倍
+
+	EGP_S2C_GAME_SEND_POKECARD_3   = EGP_START__GAME + 31,          //发牌
+	EGP_S2C_GAME_SEND_POKECARD_4   = EGP_START__GAME + 32,
+	EGP_S2C_GAME_SEND_POKECARD_5   = EGP_START__GAME + 32,
+
+	EGP_S2C_GAME_RESULT            = EGP_START__GAME + 41,          //结果
 
 };
 

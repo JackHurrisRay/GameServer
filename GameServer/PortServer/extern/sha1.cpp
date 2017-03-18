@@ -184,7 +184,7 @@ void SHA1::Input(   const unsigned char *message_array,
         return;
     }
 
-    while(length-- && !Corrupted)
+    while(length-- && !Corrupted && Message_Block_Index < 64)
     {
         Message_Block[Message_Block_Index++] = (*message_array & 0xFF);
 
