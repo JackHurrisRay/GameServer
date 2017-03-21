@@ -118,7 +118,7 @@ BASE_PLAYER* Players::login_success(unsigned short& _uid, const char* _key)
 bool Players::refresh_player(unsigned short& _uid, const char* _key)
 {
 	PLAYER_LOCK _lock;
-	bool _check;
+	bool _check = false;
 
 	if( _uid >= 0 && _uid < MAX_PLAYER_LIMIT )
 	{

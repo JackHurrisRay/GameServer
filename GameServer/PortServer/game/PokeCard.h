@@ -27,7 +27,9 @@ public:
 	CPokeCard(void);
 	~CPokeCard(void);
 
-	void Shuffle_cards();                      //Ï´ÅÆ
+	void Shuffle_cards();                      //Ï´ÅÆ	
+
+	const LP_BASE_POKE_CARD* get_card_array(){return m_card;};
 };
 
 typedef MemAllocPool<CPokeCard> ALLOC_POKECARD;

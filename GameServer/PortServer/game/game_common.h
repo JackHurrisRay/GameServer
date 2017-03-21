@@ -8,7 +8,7 @@
 #define MAX_PASSWORD_COUNT       8
 #define MAX_KEY_COUNT            64
 
-#define MAX_ROOM_LIMIT           2000
+#define MAX_ROOM_LIMIT           4000
 #define MAX_PLAYER_LIMIT         MAX_ROOM_LIMIT * 3 / 2
 
 #define MAX_PLAYER_IN_ROOM       8
