@@ -10,6 +10,8 @@
 #define JSON_PLAYER_UID                  "player_id"
 #define JSON_PLAYER_SCORE                "player_score"
 
+#define JSON_IMG_DATA                    "img_data"
+
 #define JSON_PASSWORD                    "password"
 
 #define JSON_ROOM_ID                     "room_id"
@@ -35,7 +37,7 @@ struct MSG_S2C_LOGIN:
 {
 	MSG_S2C_LOGIN():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_LOGIN)
 	{
-		initializeParam(3, JSON_PLAYER_UID, JSON_PLAYER_SCORE, JSON_ROOM_ID);
+		initializeParam(4, JSON_PLAYER_UID, JSON_PLAYER_SCORE, JSON_ROOM_ID, JSON_PLAYER_KEY);
 	}
 };
  

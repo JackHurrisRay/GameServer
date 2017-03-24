@@ -151,6 +151,9 @@
     <ClCompile Include="PortServer.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bin\data\config.ini" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -49,6 +49,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{801cf741-280c-48a7-8b58-07d0ae2cff6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{75c6e212-5924-477f-9400-cbefce26ce2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -218,5 +221,10 @@
     <ClCompile Include="game\GameDouNiu.cpp">
       <Filter>game\logic</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bin\data\config.ini">
+      <Filter>res</Filter>
+    </None>
   </ItemGroup>
 </Project>

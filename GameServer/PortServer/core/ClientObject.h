@@ -7,7 +7,8 @@
 #include "MemAllocPool.h"
 
 //////////////////////////////////////////////////////////////////////////
-#define MAX_OBJ_LOAD_DATA 2048
+#define MAX_OBJ_LOAD_DATA 1024 * 2
+#define MAX_BIG_BUFF      1024
 
 //Websocket数据包数据头信息  
 struct WebSocketStreamHeader {  
@@ -36,13 +37,18 @@ enum WS_FrameType
 }; 
 
 //////////////////////////////////////////////////////////////////////////
-struct BASE_MSG
+struct BIG_BUFF
 {
-	char _buff[BUFFER_SIZE];
+	char _buff[BUFFER_BIG_SIZE];
+
+	inline void reset()
+	{
+		memset(_buff, 0, sizeof(_buff));
+	}
 };
 
-typedef MemAllocPool<BASE_MSG> BASE_MSG_ALLOC;
-typedef std::list<BASE_MSG*>   BASE_MSG_LIST;
+typedef MemAllocPool<BIG_BUFF> ALLOC_BIG_BUFF;
+extern ALLOC_BIG_BUFF _ALLOC_BIG_BUFF;
 
 struct PER_HANDLE_DATA;
 struct PER_IO_DATA;

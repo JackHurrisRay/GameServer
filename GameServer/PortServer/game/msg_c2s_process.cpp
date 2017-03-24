@@ -84,9 +84,35 @@ NET_CALLBACK(C2S_LOGIN)
 	std::string _player_img = data[JSON_PLAYER_IMG].asString();
 
 	//////////////////////////////////////////////////////////////////////////
-	GAME_LOG("PLAYER_KEY:" << _player_key, true);
-	GAME_LOG("PLAYER_IMG:" << _player_img, true);
+	//GAME_LOG("PLAYER_KEY:" << _player_key, true);
+	//GAME_LOG("PLAYER_IMG:" << _player_img, true);
 
+	BIG_BUFF* _tempBuff = _ALLOC_BIG_BUFF.createData();
+	_tempBuff->reset();
+
+	char* _buff = _tempBuff->_buff;
+
+	//std::string _img64 = "";
+	int _img_len = JackBase64::GetInterNetURLText(_player_img.c_str(), _buff, BUFFER_BIG_SIZE);
+
+	if( _img_len > 0 )
+	{
+		//_img64 = JackBase64::base64_encode((const unsigned char*)_buff, _img_len);
+
+		std::string _player_img_path = JackBase64::GAME_CONFIG::Instance()->_SOURCE_PATH;
+		_player_img_path += "\\";
+		_player_img_path += _player_key;
+
+		JackBase64::checkPath(_player_img_path.c_str());
+
+		_player_img_path += "\\img_account";
+
+		JackBase64::writefile(_player_img_path.c_str(), _buff, _img_len);
+	}
+
+	_ALLOC_BIG_BUFF.releaseData(_tempBuff);
+
+	//////////////////////////////////////////////////////////////////////////
 	unsigned short _uid = 0xFFFF;
 
 	//此处需要插入微信登录验证
@@ -102,6 +128,7 @@ NET_CALLBACK(C2S_LOGIN)
 		_msg._dataLArray[0]->setNumber(_uid);
 		_msg._dataLArray[1]->setNumber(1000);
 		_msg._dataLArray[2]->setNumber(_player->_ROOMID);
+		_msg._dataLArray[3]->setString(_player->_KEY);
 
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);
 	}

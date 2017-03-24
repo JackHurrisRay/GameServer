@@ -9,6 +9,7 @@
 //////////////////////////////////////////////////////////////////////////
 #include "game/PokeCard.h"
 #include "common/JACK_LIST.h"
+#include "core/JackBase64.h"
 
 DWORD WINAPI thread_exit( LPVOID lpParam );
 int _tmain(int argc, _TCHAR* argv[])
@@ -31,6 +32,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	_TEST_LIST.close_loop();
 	_TEST_LIST.clear();
 	*/
+
+	//////////////////////////////////////////////////////////////////////////
+	JackBase64::GAME_CONFIG* _config = JackBase64::GAME_CONFIG::Instance();
 
 
 	//////////////////////////////////////////////////////////////////////////

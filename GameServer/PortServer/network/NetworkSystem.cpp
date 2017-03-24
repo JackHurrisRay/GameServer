@@ -249,7 +249,7 @@ void NetworkSystem::work()
 			closeClientSocket( pPerHandle, pPerIo );
 			continue;   
 		}  
-		if( dwTrans >= 2048 )
+		if( dwTrans >= BUFFER_SIZE )
 		{
 			//´íÎóÊı¾İ
 			closeClientSocket( pPerHandle, pPerIo );
