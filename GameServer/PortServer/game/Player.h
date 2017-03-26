@@ -7,7 +7,7 @@ enum ENUM_PLAYER_TYPE
 {
 	EPT_NONE = 0,
 	EPT_DAY,                                                                //包日用户
-	EPT_WEAK,                                                               //包周用户
+	EPT_WEEK,                                                               //包周用户
 	EPT_MONTH,                                                              //包月用户
 };
 
