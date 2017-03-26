@@ -91,14 +91,11 @@ NET_CALLBACK(C2S_LOGIN)
 	_tempBuff->reset();
 
 	char* _buff = _tempBuff->_buff;
-
-	//std::string _img64 = "";
 	int _img_len = JackBase64::GetInterNetURLText(_player_img.c_str(), _buff, BUFFER_BIG_SIZE);
 
 	if( _img_len > 0 )
 	{
-		//_img64 = JackBase64::base64_encode((const unsigned char*)_buff, _img_len);
-
+		//////////////////////////////////////////////////////////////////////////
 		std::string _player_img_path = JackBase64::GAME_CONFIG::Instance()->_SOURCE_PATH;
 		_player_img_path += "\\";
 		_player_img_path += _player_key;
@@ -108,6 +105,7 @@ NET_CALLBACK(C2S_LOGIN)
 		_player_img_path += "\\img_account";
 
 		JackBase64::writefile(_player_img_path.c_str(), _buff, _img_len);
+
 	}
 
 	_ALLOC_BIG_BUFF.releaseData(_tempBuff);
@@ -124,13 +122,25 @@ NET_CALLBACK(C2S_LOGIN)
 		_player->_CLIENT = client;
 
 		//////////////////////////////////////////////////////////////////////////
+		_player->_GOLD = 1000;
+
+		//////////////////////////////////////////////////////////////////////////
 		MSG_S2C_LOGIN _msg;
 		_msg._dataLArray[0]->setNumber(_uid);
-		_msg._dataLArray[1]->setNumber(1000);
+		_msg._dataLArray[1]->setNumber(_player->_GOLD);
 		_msg._dataLArray[2]->setNumber(_player->_ROOMID);
 		_msg._dataLArray[3]->setString(_player->_KEY);
 
+		////
+		_msg._dataLArray[4]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
+
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);
+
+		//////////////////////////////////////////////////////////////////////////
+		_player->_PLAYER_DATA_PATH = JackBase64::GAME_CONFIG::Instance()->_PLAYER_PATH;
+		_player->_PLAYER_DATA_PATH += _player_key;
+
+		JackBase64::checkPath(_player->_PLAYER_DATA_PATH.c_str());
 	}
 	else
 	{
@@ -154,6 +164,16 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 	//////////////////////////////////////////////////////////////////////////
 	int _room_type = data[JSON_ROOM_TYPE].asInt();
 	if( _room_type > EGRT_NONE && _room_type < EGRT_COUNT )
+	{
+
+	}
+	else
+	{
+		return false;
+	}
+
+	int _room_around_count = data[JSON_ROOM_MAX_AROUND].asInt();
+	if( _room_around_count >= 0 && _room_around_count < 3 )
 	{
 
 	}
@@ -192,6 +212,9 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 		//////////////////////////////////////////////////////////////////////////
 		_room->_room_type = (ENUM_GAME_ROOM_TYPE)_room_type;
 		_room->_room_status = ERS_NOGAME;
+
+		const int _MAX_AROUND_COUNT[] = {10, 20, 30};
+		_room->_MAX_ROUND = _MAX_AROUND_COUNT[_room_around_count];
 
 		//////////////////////////////////////////////////////////////////////////
 		MSG_S2C_CREATE_ROOM _msg;

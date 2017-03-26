@@ -3,6 +3,14 @@
 #include "./../core/MemAllocPool.h"
 #include "game_common.h"
 
+enum ENUM_PLAYER_TYPE
+{
+	EPT_NONE = 0,
+	EPT_DAY,                                                                //包日用户
+	EPT_WEAK,                                                               //包周用户
+	EPT_MONTH,                                                              //包月用户
+};
+
 struct BASE_OBJECT;
 struct BASE_PLAYER
 {
@@ -13,12 +21,23 @@ struct BASE_PLAYER
 	short               _ROOMID;                                            //玩家房间标识 0为不可用
 
 	unsigned long long  _GOLD;                                              //金币
-	long long           _SCORE;                                             //分数
+	ENUM_PLAYER_TYPE    _EPT_TYPE;                                          //
+
+
+	//////////////////////////////////////////////////////////////////////////
 	BASE_OBJECT*        _CLIENT;                                            //
 
 	char                _INDEX;                                             //-1为不可用， 房间里的座位顺序
+	std::string         _PLAYER_DATA_PATH;
 
+	//////////////////////////////////////////////////////////////////////////
 	void initData();
+	void release();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	void saveData();
+	void loadData();
 
 };
 typedef BASE_PLAYER* LP_BASE_PLAYER;

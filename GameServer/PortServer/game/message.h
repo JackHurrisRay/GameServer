@@ -8,6 +8,7 @@
 #define JSON_PLAYER_KEY                  "player_key"
 #define JSON_PLAYER_IMG                  "player_img"
 #define JSON_PLAYER_UID                  "player_id"
+#define JSON_PLAYER_DIAMOND              "player_diamond"
 #define JSON_PLAYER_SCORE                "player_score"
 
 #define JSON_IMG_DATA                    "img_data"
@@ -19,6 +20,9 @@
 #define JSON_ROOM_TYPE                   "room_type"
 #define JSON_ROOM_STATUS                 "room_status"
 #define JSON_ROOM_PLAYERCOUNT            "room_player_count"
+#define JSON_ROOM_MAX_AROUND             "room_max_around"
+
+#define JSON_EX_DATA                     "extern_data"
 
 #define JSON_STATUS                      "STATUS"
 
@@ -37,7 +41,7 @@ struct MSG_S2C_LOGIN:
 {
 	MSG_S2C_LOGIN():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_LOGIN)
 	{
-		initializeParam(4, JSON_PLAYER_UID, JSON_PLAYER_SCORE, JSON_ROOM_ID, JSON_PLAYER_KEY);
+		initializeParam(5, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, JSON_ROOM_ID, JSON_PLAYER_KEY, JSON_EX_DATA);
 	}
 };
  
@@ -46,7 +50,7 @@ struct MSG_C2S_CREATE_ROOM:
 {
 	MSG_C2S_CREATE_ROOM():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_C2S_CREATE_ROOM)
 	{
-		initializeParam(2, JSON_ROOM_TYPE, JSON_PASSWORD);
+		initializeParam(3, JSON_ROOM_TYPE, JSON_PASSWORD, JSON_ROOM_MAX_AROUND);
 	}
 };
 
@@ -55,7 +59,7 @@ struct MSG_S2C_CREATE_ROOM:
 {
 	MSG_S2C_CREATE_ROOM():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_CREATE_ROOM)
 	{
-		initializeParam(4, JSON_ROOM_ID, JSON_ROOM_RANDKEY, JSON_ROOM_TYPE, JSON_ROOM_STATUS);
+		initializeParam(5, JSON_ROOM_ID, JSON_ROOM_RANDKEY, JSON_ROOM_TYPE, JSON_ROOM_STATUS, JSON_ROOM_MAX_AROUND);
 	}
 };
 

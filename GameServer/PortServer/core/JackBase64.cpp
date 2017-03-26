@@ -5,9 +5,10 @@
 #include <windows.h>
 #include <urlmon.h>
 #include <io.h>
-
 #include <wininet.h>
 #pragma comment(lib, "wininet.lib")
+
+#include "json/json.h"
 
 namespace JackBase64
 {
@@ -23,8 +24,52 @@ namespace JackBase64
 		_hr = GetPrivateProfileStringA("SERVER", "SOURCE_PATH", "", _BUFF, sizeof(_BUFF), _configFilePath);
 		_SOURCE_PATH = _BUFF;
 
-		_hr = GetPrivateProfileStringA("SERVER", "PLAYER_DIR", "", _BUFF, sizeof(_BUFF), _configFilePath);
-		_PLAYER_DIR = _BUFF;
+		_PLAYER_PATH = "data\\player\\";
+
+		//////////////////////////////////////////////////////////////////////////
+		_GAME_MAX_AROUND[0] = GetPrivateProfileIntA("GAME","GAME_MAX_AROUND_1",0,_configFilePath);
+		_GAME_MAX_AROUND[1] = GetPrivateProfileIntA("GAME","GAME_MAX_AROUND_2",0,_configFilePath);
+		_GAME_MAX_AROUND[2] = GetPrivateProfileIntA("GAME","GAME_MAX_AROUND_3",0,_configFilePath);
+
+		//////////////////////////////////////////////////////////////////////////
+		_GAME_MAX_AROUND_GOLD[0] = GetPrivateProfileIntA("GAME","GMA_GOLD_1",0,_configFilePath);
+		_GAME_MAX_AROUND_GOLD[1] = GetPrivateProfileIntA("GAME","GMA_GOLD_1",0,_configFilePath);
+		_GAME_MAX_AROUND_GOLD[2] = GetPrivateProfileIntA("GAME","GMA_GOLD_1",0,_configFilePath);
+
+		//////////////////////////////////////////////////////////////////////////
+		_GAME_VIP_GOLD[0] = GetPrivateProfileIntA("GAME","GAME_DAY_VIP",0,_configFilePath);
+		_GAME_VIP_GOLD[1] = GetPrivateProfileIntA("GAME","GAME_WEAK_VIP",0,_configFilePath);
+		_GAME_VIP_GOLD[2] = GetPrivateProfileIntA("GAME","GAME_MONTH_VIP",0,_configFilePath);
+
+		const char* _VIP_GOLD_NAME[] = {"DAY","WEAK","MONTH"};
+
+		Json::Value _root;
+		Json::Value _data;
+		Json::Value _GAME_MAX_AROUND;
+		Json::Value _GAME_VIP_GOLD;
+
+		for( int i = 0; i<3; i++ )
+		{
+			Json::Value _max_around_data;
+			_max_around_data["COUNT"] = this->_GAME_MAX_AROUND[i];
+			_max_around_data["GOLD"]  = this->_GAME_MAX_AROUND_GOLD[i];
+
+			_data["MAX_AROUND"].append(_max_around_data);
+
+			Json::Value _vip_gold_data;
+			_vip_gold_data["NAME"] = _VIP_GOLD_NAME[i];
+			_vip_gold_data["GOLD"] = this->_GAME_VIP_GOLD[i];
+
+			_data["VIP_TYPE"].append(_vip_gold_data);
+		}
+
+		_root["DATA"] = _data;
+
+		Json::FastWriter writer;
+		std::string output = writer.write(_root);
+
+		_JSON_DATA_FOR_GAME = output;
+
 	}
 
 

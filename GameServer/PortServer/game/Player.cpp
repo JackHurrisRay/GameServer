@@ -15,6 +15,21 @@ void BASE_PLAYER::initData()
 	_CLIENT    = NULL;
 }
 
+void BASE_PLAYER::release()
+{
+
+}
+
+void BASE_PLAYER::saveData()
+{
+
+}
+
+void BASE_PLAYER::loadData()
+{
+
+}
+
 void BASE_OBJECT::release()
 {
 	BASE_PLAYER* _player = Players::Instance()->get_player(_UID);
@@ -186,7 +201,9 @@ void Players::delete_player(unsigned short _uid)
 		if( _player != NULL )
 		{
 			m_players[_uid] = NULL;
+			_player->release();
 			_ALLOC_PLAYER.releaseData(_player);
 		}
 	}
 }
+

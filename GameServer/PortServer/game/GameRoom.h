@@ -40,20 +40,14 @@ enum ENUM_GAME_ROOM_TYPE
 	EGRT_FIGHT_BANKER,      //抢庄家
 	EGRT_NONE_BANKER,       //无庄家
 
-	//////////////////////////////////////////////////////////////////////////
-	EGRT_TURN_BANKER_DAY,   //
-	EGRT_TURN_BANKER_WEEK,  //
-	EGRT_TURN_BANKER_MONTH, //
-
-	EGRT_FIGHT_BANKER_DAY,
-	EGRT_FIGHT_BANKER_WEEK,
-	EGRT_FIGHT_BANKER_MONTH,
-
-	EGRT_NONE_BANKER_DAY,
-	EGRT_NONE_BANKER_WEEK,
-	EGRT_NONE_BANKER_MONTH,
-
 	EGRT_COUNT,
+};
+
+enum ENUM_GAME_ROOM_COUNT
+{
+	EGRC_10 = 0,
+	EGRC_20,
+	EGRC_30,
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,7 +82,7 @@ struct BASE_ROOM
 	time_t         _agree_disband;                       //房间解散等待同意的时间
 
 	//////////////////////////////////////////////////////////////////////////
-	ENUM_GAME_ROOM_TYPE   _room_type;           
+	ENUM_GAME_ROOM_TYPE   _room_type;       
 	ENUM_ROOM_STATUS      _room_status;
 
 	//////////////////////////////////////////////////////////////////////////
