@@ -17,6 +17,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 NET_CALLBACK(C2S_LOGIN);
+NET_CALLBACK(C2S_GETPLAYERDATA);
 NET_CALLBACK(C2S_CREATE_ROOM);
 NET_CALLBACK(C2S_ENTER_ROOM);
 NET_CALLBACK(C2S_LEAVE_ROOM);

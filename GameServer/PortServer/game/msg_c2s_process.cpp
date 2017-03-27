@@ -26,6 +26,8 @@ CProtocalFactory::Instance()->bind_func(ENUM_GAME_PROTOCAL::EGP_##X, &NET_CALLBA
 	std::cout << "...init protocal..." << std::endl;
 
 	BIND_CALLBACK(C2S_LOGIN);
+	BIND_CALLBACK(C2S_GETPLAYERDATA);
+
 	BIND_CALLBACK(C2S_CREATE_ROOM);
 
 	BIND_CALLBACK(C2S_ENTER_ROOM);
@@ -125,22 +127,26 @@ NET_CALLBACK(C2S_LOGIN)
 		_player->_GOLD = 1000;
 
 		//////////////////////////////////////////////////////////////////////////
+		_player->_PLAYER_DATA_PATH = JackBase64::GAME_CONFIG::Instance()->_PLAYER_PATH;
+		_player->_PLAYER_DATA_PATH += _player_key;
+
+		JackBase64::checkPath(_player->_PLAYER_DATA_PATH.c_str());
+		_player->loadData();
+
+		//////////////////////////////////////////////////////////////////////////
 		MSG_S2C_LOGIN _msg;
 		_msg._dataLArray[0]->setNumber(_uid);
 		_msg._dataLArray[1]->setNumber(_player->_GOLD);
 		_msg._dataLArray[2]->setNumber(_player->_ROOMID);
 		_msg._dataLArray[3]->setString(_player->_KEY);
+		_msg._dataLArray[4]->setString(_player->_NickName);
 
 		////
-		_msg._dataLArray[4]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
+		_msg._dataLArray[5]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
 
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);
 
-		//////////////////////////////////////////////////////////////////////////
-		_player->_PLAYER_DATA_PATH = JackBase64::GAME_CONFIG::Instance()->_PLAYER_PATH;
-		_player->_PLAYER_DATA_PATH += _player_key;
 
-		JackBase64::checkPath(_player->_PLAYER_DATA_PATH.c_str());
 	}
 	else
 	{
@@ -175,7 +181,24 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 	int _room_around_count = data[JSON_ROOM_MAX_AROUND].asInt();
 	if( _room_around_count >= 0 && _room_around_count < 3 )
 	{
+		//////////////////////////////////////////////////////////////////////////
+		//¿Û³ýgold
 
+		int _needGold = JackBase64::GAME_CONFIG::Instance()->_GAME_MAX_AROUND_GOLD[_room_around_count];
+
+		if( player->_GOLD >= _needGold )
+		{
+			player->_GOLD -= _needGold;
+		}
+		else
+		{
+			MSG_S2C_CREATE_ROOM _msg;
+			_msg._error_code = PROTOCAL_ERROR_ROOM;
+			_msg._error_ex   = ERE_ROOM_CAN_NOT_CREATED_WITHOUTPAY;
+			SEND_MSG<MSG_S2C_CREATE_ROOM>(_msg, client);
+
+			return true;
+		}
 	}
 	else
 	{
@@ -232,6 +255,20 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 		_msg._error_ex   = _hr;
 		SEND_MSG<MSG_S2C_CREATE_ROOM>(_msg, client);
 	}
+
+	return true;
+}
+
+NET_CALLBACK(C2S_GETPLAYERDATA)
+{
+	//////////////////////////////////////////////////////////////////////////
+	CHECK_MSG_PARAM(MSG_C2S_GETPLAYERDATA);
+	CHECK_MSG_LOGIN(client);
+	GET_PLAYER;
+
+	MSG_S2C_GETPLAYERDATA _msg;
+	_msg._dataLArray[0]->setNumber(player->_GOLD);
+	SEND_MSG<MSG_S2C_GETPLAYERDATA>(_msg, client);
 
 	return true;
 }

@@ -65,6 +65,9 @@ namespace JackBase64
 
 	void checkPath(const char* _path);
 	void writefile(const char* _path, char* _buff, size_t _buffsize);
+
+	void writeTextToFile(const char* _path, std::string _text);
+	bool readTextFromFile(const char* _path, std::string& _text);
 };
 
 #endif

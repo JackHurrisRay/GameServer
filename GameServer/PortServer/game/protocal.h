@@ -17,6 +17,8 @@ enum ENUM_GAME_PROTOCAL
 	EGP_S2C_RECONNECT_READY = EGP_START__LOGIN + 13,
 	EGP_S2C_RECONNECT_ROOM  = EGP_START__LOGIN + 14,
 
+	EGP_C2S_GETPLAYERDATA   = EGP_START__LOGIN + 15,
+	EGP_S2C_GETPLAYERDATA   = EGP_START__LOGIN + 16,
 
 	//////////////////////////////////////////////////////////////////////////
 	/************************************************************************/

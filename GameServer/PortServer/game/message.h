@@ -6,9 +6,12 @@
 
 #define JSON_FLAG                        "flag"
 #define JSON_PLAYER_KEY                  "player_key"
+#define JSON_PLAYER_NICKNAME             "player_nickname"
 #define JSON_PLAYER_IMG                  "player_img"
 #define JSON_PLAYER_UID                  "player_id"
 #define JSON_PLAYER_DIAMOND              "player_diamond"
+#define JSON_PLAYER_GOLD                 JSON_PLAYER_DIAMOND
+
 #define JSON_PLAYER_SCORE                "player_score"
 
 #define JSON_IMG_DATA                    "img_data"
@@ -41,10 +44,29 @@ struct MSG_S2C_LOGIN:
 {
 	MSG_S2C_LOGIN():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_LOGIN)
 	{
-		initializeParam(5, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, JSON_ROOM_ID, JSON_PLAYER_KEY, JSON_EX_DATA);
+		initializeParam(6, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, JSON_ROOM_ID, JSON_PLAYER_KEY, JSON_PLAYER_NICKNAME, JSON_EX_DATA);
 	}
 };
- 
+
+struct MSG_C2S_GETPLAYERDATA:
+	public BASE_PROTOCAL_MSG
+{
+	MSG_C2S_GETPLAYERDATA():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_C2S_GETPLAYERDATA)
+	{
+
+	}
+};
+
+struct MSG_S2C_GETPLAYERDATA:
+	public BASE_PROTOCAL_MSG
+{
+	MSG_S2C_GETPLAYERDATA():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_GETPLAYERDATA)
+	{
+		initializeParam(1, JSON_PLAYER_GOLD);
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
 struct MSG_C2S_CREATE_ROOM:
 	public BASE_PROTOCAL_MSG
 {

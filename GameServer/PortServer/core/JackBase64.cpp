@@ -33,8 +33,8 @@ namespace JackBase64
 
 		//////////////////////////////////////////////////////////////////////////
 		_GAME_MAX_AROUND_GOLD[0] = GetPrivateProfileIntA("GAME","GMA_GOLD_1",0,_configFilePath);
-		_GAME_MAX_AROUND_GOLD[1] = GetPrivateProfileIntA("GAME","GMA_GOLD_1",0,_configFilePath);
-		_GAME_MAX_AROUND_GOLD[2] = GetPrivateProfileIntA("GAME","GMA_GOLD_1",0,_configFilePath);
+		_GAME_MAX_AROUND_GOLD[1] = GetPrivateProfileIntA("GAME","GMA_GOLD_2",0,_configFilePath);
+		_GAME_MAX_AROUND_GOLD[2] = GetPrivateProfileIntA("GAME","GMA_GOLD_3",0,_configFilePath);
 
 		//////////////////////////////////////////////////////////////////////////
 		_GAME_VIP_GOLD[0] = GetPrivateProfileIntA("GAME","GAME_DAY_VIP",0,_configFilePath);
@@ -356,6 +356,36 @@ namespace JackBase64
 			fwrite(_buff, sizeof(char), _buffsize, _file);
 			fclose(_file);
 		}
+	}
+
+	void writeTextToFile(const char* _path, std::string _text)
+	{
+		FILE* _file = fopen(_path, "w");
+		if( _file )
+		{
+			fwrite(_text.c_str(), sizeof(char), _text.size(), _file);
+			fclose(_file);
+		}
+	}
+
+	bool readTextFromFile(const char* _path, std::string& _text)
+	{
+		bool _check = false;
+		FILE* _file = fopen(_path, "r");
+		if( _file )
+		{
+			char _buff[4096];
+			memset(_buff, 0, sizeof(_buff));
+			if( fread(_buff, sizeof(char), sizeof(_buff), _file) > 0 )
+			{
+				_text  = _buff;
+				_check = true;
+			}
+
+			fclose(_file);
+		}
+
+		return _check;
 	}
 
 };

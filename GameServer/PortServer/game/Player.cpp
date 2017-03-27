@@ -1,5 +1,7 @@
 #include "Player.h"
 #include "./../core/ClientObject.h"
+#include "message.h"
+#include "json/json.h"
 
 //////////////////////////////////////////////////////////////////////////
 ALLOC_PLAYER Players::_ALLOC_PLAYER = ALLOC_PLAYER(MAX_PLAYER_LIMIT, "PLAYER ALLOC");
@@ -8,11 +10,16 @@ ALLOC_PLAYER Players::_ALLOC_PLAYER = ALLOC_PLAYER(MAX_PLAYER_LIMIT, "PLAYER ALL
 void BASE_PLAYER::initData()
 {
 	memset(_KEY, 0, sizeof(_KEY));
+	memset(_NickName, 0, sizeof(_NickName));
+	
+	strcpy(_NickName, "JackGame");
+
 	_PLAYER_ID = 0xFFFF;
 	_GOLD      = 0;
 	_ROOMID    = -1;
 	_INDEX     = -1;
 	_CLIENT    = NULL;
+	
 }
 
 void BASE_PLAYER::release()
@@ -20,14 +27,57 @@ void BASE_PLAYER::release()
 
 }
 
+#define PLAYER_JSON_DATA "player_data.json"
+
 void BASE_PLAYER::saveData()
 {
+	////
+	//wc_id, gold
 
+	Json::Value _root;
+
+	_root[JSON_PLAYER_KEY]      = _KEY;
+	_root[JSON_PLAYER_NICKNAME] = _NickName;
+	_root[JSON_PLAYER_GOLD]     = _GOLD;
+
+	Json::FastWriter _writer;
+	std::string _info = _writer.write(_root);
+
+	std::string _dataPath = _PLAYER_DATA_PATH;
+	_dataPath += "\\";
+	_dataPath += PLAYER_JSON_DATA;
+
+	JackBase64::writeTextToFile(_dataPath.c_str(), _info);
 }
 
-void BASE_PLAYER::loadData()
+bool BASE_PLAYER::loadData()
 {
+	bool _check = false;
 
+	std::string _dataPath = _PLAYER_DATA_PATH;
+	_dataPath += "\\";
+	_dataPath += PLAYER_JSON_DATA;
+
+	////
+	std::string _info;
+
+	if( JackBase64::readTextFromFile(_dataPath.c_str(), _info) )
+	{
+		Json::Value _root;
+		Json::Reader _reader;
+
+		if( _reader.parse(_info, _root) )
+		{
+			//////////////////////////////////////////////////////////////////////////
+			_GOLD = _root[JSON_PLAYER_GOLD].asUInt64();
+			std::string _nickname = _root[JSON_PLAYER_NICKNAME].asString();
+			strcpy(_NickName, _nickname.c_str());
+
+			_check = true;
+		}
+	}
+
+	return _check;
 }
 
 void BASE_OBJECT::release()
@@ -36,6 +86,7 @@ void BASE_OBJECT::release()
 
 	if( _player != NULL )
 	{
+		_player->saveData();
 		_player->_CLIENT = NULL;
 	}
 }

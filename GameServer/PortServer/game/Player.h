@@ -16,6 +16,7 @@ struct BASE_PLAYER
 {
 	//////////////////////////////////////////////////////////////////////////
 	char                _KEY[MAX_KEY_COUNT];                                //玩家唯一标识
+	char                _NickName[MAX_NICKNAME_COUNT];                      //玩家昵称
 
 	unsigned short      _PLAYER_ID;                                         //玩家ID，由系统生成, 标识为玩家的UID
 	short               _ROOMID;                                            //玩家房间标识 0为不可用
@@ -37,7 +38,7 @@ struct BASE_PLAYER
 
 	//////////////////////////////////////////////////////////////////////////
 	void saveData();
-	void loadData();
+	bool loadData();
 
 };
 typedef BASE_PLAYER* LP_BASE_PLAYER;
