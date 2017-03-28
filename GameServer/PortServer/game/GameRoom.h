@@ -113,12 +113,12 @@ struct BASE_ROOM
 
 	//////////////////////////////////////////////////////////////////////////
 	template<class T>
-	void brodcast(T msg)
+	void brodcast(T msg, BASE_PLAYER* _exceptplayer = NULL)
 	{
 		for( int i=0; i<MAX_PLAYER_IN_ROOM; i++ )
 		{
 			BASE_PLAYER* _player = _Players[i];
-			if( _player != NULL && _player->_CLIENT )
+			if( _player != NULL && _player->_CLIENT && _player != _exceptplayer )
 			{
 				SEND_MSG(msg, _player->_CLIENT);
 			}
@@ -153,7 +153,7 @@ public:
 	//创建房间 0:成功创建房间 1:金币不足无法创建房间 2:条件不足无法创建房间 3:房间已满，无法创建房间       >0xFF:其他原因无法创建房间
 	ENUM_ROOM_ERROR createRoom(BASE_PLAYER* _player, BASE_ROOM*& _room);
 	//进入房间 0:成功进入房间 1:房间已满，无法进入房间 2:条件不足无法进入房间 3:已经在房间内，无法进入新房间 0xF:房间不存在无法进入 >0xFF:其他原因无法进入房间
-	ENUM_ROOM_ERROR enterRoom(unsigned short _room_id, BASE_PLAYER* _player, const char* _password, BASE_ROOM*& _room);
+	ENUM_ROOM_ERROR enterRoom(int _rand_key, BASE_PLAYER* _player, const char* _password, BASE_ROOM*& _room);
 	//离开房间 0:成功离开房间 1:游戏中无法离开房间 >0xF:其他原因无法离开房间 0xF:房间不存在无法离开 >0xFF:其他原因无法离开
 	ENUM_ROOM_ERROR leaveRoom(BASE_PLAYER* _player, BASE_ROOM*& _room);
 	//全部离开房间 0:成功解散房间 1:有人不同意解散房间 2:房间状态不允许解散房间 0xF:房间不存在无法解散 >0xFF:其他原因无法解散房间

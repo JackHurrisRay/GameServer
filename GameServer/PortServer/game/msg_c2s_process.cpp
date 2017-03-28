@@ -138,11 +138,21 @@ NET_CALLBACK(C2S_LOGIN)
 		_msg._dataLArray[0]->setNumber(_uid);
 		_msg._dataLArray[1]->setNumber(_player->_GOLD);
 		_msg._dataLArray[2]->setNumber(_player->_ROOMID);
-		_msg._dataLArray[3]->setString(_player->_KEY);
-		_msg._dataLArray[4]->setString(_player->_NickName);
+
+		_msg._dataLArray[3]->setNumber(0);
+
+		_msg._dataLArray[4]->setString(_player->_KEY);
+		_msg._dataLArray[5]->setString(_player->_NickName);
 
 		////
-		_msg._dataLArray[5]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
+		_msg._dataLArray[6]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
+
+		////
+		BASE_ROOM* _room = GameRooms::Instance()->get_room(_player->_ROOMID);
+		if( _room != NULL )
+		{
+			_msg._dataLArray[3]->setNumber(_room->_ROOM_ID_RANDFLAG);
+		}
 
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);
 
@@ -280,17 +290,28 @@ NET_CALLBACK(C2S_ENTER_ROOM)
 	CHECK_MSG_LOGIN(client);
 	GET_PLAYER;
 
-	const short _room_id = data[JSON_ROOM_ID].asInt();
+	std::string _strRandKey = data[JSON_ROOM_RANDKEY].asString();
 	const std::string _password = data[JSON_PASSWORD].asString();
 
+	if( _strRandKey.size() != 6 )
+	{
+		return false;
+	}
+
+	const int _rand_key = atoi(_strRandKey.c_str());
+
 	BASE_ROOM* _room;
-	ENUM_ROOM_ERROR _hr = GameRooms::Instance()->enterRoom(_room_id, player, _password.c_str(), _room);
+	ENUM_ROOM_ERROR _hr = GameRooms::Instance()->enterRoom(_rand_key, player, _password.c_str(), _room);
 
 	if( _hr == ERE_ROOM_OK )
 	{
 		MSG_S2C_ENTER_ROOM _msg;
-		_msg._dataLArray[0]->setNumber(_room_id);
-		_msg._dataLArray[1]->setNumber(player->_PLAYER_ID);
+		_msg._dataLArray[0]->setNumber(_room->_ROOM_ID);
+		_msg._dataLArray[1]->setNumber(_room->_ROOM_ID_RANDFLAG);
+		_msg._dataLArray[2]->setNumber(player->_PLAYER_ID);
+		_msg._dataLArray[3]->setString(player->_KEY);
+		_msg._dataLArray[4]->setString(player->_NickName);
+		_msg._dataLArray[5]->setNumber(player->_INDEX);
 
 		//////////////////////////////////////////////////////////////////////////
 		_room->brodcast<MSG_S2C_ENTER_ROOM>(_msg);
@@ -318,14 +339,18 @@ NET_CALLBACK(C2S_LEAVE_ROOM)
 
 	if( _hr == ERE_ROOM_OK )
 	{
-		MSG_S2C_LEAVE_ROOM _msg;
-		_msg._dataLArray[0]->setNumber(player->_PLAYER_ID);
-		_msg._dataLArray[1]->setNumber(_room->_ROOM_ID);
+		MSG_S2C_LEAVE_ROOM _msg1;
+		_msg1._dataLArray[0]->setNumber(player->_PLAYER_ID);
+		_msg1._dataLArray[1]->setNumber(_room->_ROOM_ID);
 
 		//////////////////////////////////////////////////////////////////////////
-		_room->brodcast<MSG_S2C_LEAVE_ROOM>(_msg);
-		SEND_MSG<MSG_S2C_LEAVE_ROOM>(_msg, client);
+		_room->brodcast<MSG_S2C_LEAVE_ROOM>(_msg1, player);
 
+		MSG_S2C_LEAVE_ROOM _msg2;
+		_msg2._dataLArray[0]->setNumber(player->_PLAYER_ID);
+		_msg2._dataLArray[1]->setNumber(_room->_ROOM_ID);
+		_msg2._dataLArray[2]->setNumber(player->_GOLD);
+		SEND_MSG<MSG_S2C_LEAVE_ROOM>(_msg2, client);
 	}
 	else
 	{

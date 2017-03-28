@@ -323,16 +323,19 @@ ENUM_ROOM_ERROR GameRooms::createRoom(BASE_PLAYER* _player, BASE_ROOM*& _room)
 }
 
 //进入房间 0:成功进入房间 1:房间已满，无法进入房间 2:条件不足无法进入房间 3:已经在房间内，无法进入新房间 0xF:房间不存在无法进入 >0xFF:其他原因无法进入房间
-ENUM_ROOM_ERROR GameRooms::enterRoom(unsigned short _room_id, BASE_PLAYER* _player, const char* _password, BASE_ROOM*& _room)
+ENUM_ROOM_ERROR GameRooms::enterRoom(int _rand_key, BASE_PLAYER* _player, const char* _password, BASE_ROOM*& _room)
 {
 	ROOM_LOCK _lock;
 
 	ENUM_ROOM_ERROR _result = ERE_ROOM_UNKNOWN;
 	_room = NULL;
-
-	if( _room_id >= 0 && _room_id < MAX_ROOM_LIMIT )
+	
+	for( int i=0; i<MAX_ROOM_LIMIT; i++ )
 	{
-		_room = m_rooms[_room_id];
+		if( m_rooms[i] != NULL && m_rooms[i]->_ROOM_ID_RANDFLAG == _rand_key )
+		{
+			_room = m_rooms[i];
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
