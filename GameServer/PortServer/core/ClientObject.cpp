@@ -46,12 +46,15 @@ void BASE_OBJECT::release()
 }
 */
 
-bool BASE_OBJECT::ReadHeader(const unsigned char* cData, WebSocketStreamHeader* header)
+int BASE_OBJECT::ReadHeader(const unsigned char* cData)
 {
-	if (cData == NULL)return false;
-
+	if (cData == NULL)return -1;
 	const unsigned char *buf = cData;
 
+	//////////////////////////////////////////////////////////////////////////
+	WebSocketStreamHeader* header = &_WebSocketheader;
+
+	//////////////////////////////////////////////////////////////////////////
 	header->fin = buf[0] & 0x80;
 	header->masked = buf[1] & 0x80;
 	unsigned char stream_size = buf[1] & 0x7F;
@@ -59,7 +62,7 @@ bool BASE_OBJECT::ReadHeader(const unsigned char* cData, WebSocketStreamHeader* 
 	header->opcode = buf[0] & 0x0F;
 	if (header->opcode == WS_FrameType::WS_CONTINUATION_FRAME) {
 		//连续帧
-		return false;
+		
 	}
 	else if (header->opcode == WS_FrameType::WS_TEXT_FRAME) {
 		//文本帧
@@ -70,21 +73,24 @@ bool BASE_OBJECT::ReadHeader(const unsigned char* cData, WebSocketStreamHeader* 
 	}
 	else if (header->opcode == WS_FrameType::WS_CLOSING_FRAME) {
 		//连接关闭消息
-		return false;
+		return -1;
 	}
 	else if (header->opcode == WS_FrameType::WS_PING_FRAME) {
 		//  ping
-		return false;
 	}
 	else if (header->opcode == WS_FrameType::WS_PONG_FRAME) {
 		// pong
-		return false;
 	}
 	else {
 		//非法帧
-		return false;
+		
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	memset(_BUFF1, 0, sizeof(_BUFF1));
+	memcpy(_BUFF1, cData, 2);
+
+	//////////////////////////////////////////////////////////////////////////
 	header->extended_size = 0;
 	if (stream_size <= 125) {
 		//	small stream
@@ -95,44 +101,58 @@ bool BASE_OBJECT::ReadHeader(const unsigned char* cData, WebSocketStreamHeader* 
 	else if (stream_size == 126) {
 		//	medium stream 
 		header->header_size = 8;
+
+		/*
 		unsigned short s = 0;
 		
 		s = buf[2] << 8;
 		s += buf[3];
+		header->extended_size = s;
+		*/
 	
 		header->payload_size  = 126;
-		header->extended_size = s;
 		header->mask_offset   = 4;
+
+		return 1;
 	}
 	else if (stream_size == 127) {
-
-		/*
-		unsigned long long l = 0;
-		memcpy(&l, (const char*)&buf[2], 8);
-
-		header->payload_size = l;
-		header->mask_offset = 10;
-		*/
-
-		return false;
+		return -1;
 	}
 	else {
 		//Couldnt decode stream size 非法大小数据包
-		return false;
+		return -1;
 	}
 
 	if (header->payload_size > MAX_OBJ_LOAD_DATA) {
-		return false;
+		return -1;
 	}
 
-	memset(_BUFF1, 0, sizeof(_BUFF1));
-	memcpy(_BUFF1, cData, 4);
+	return 0;
+}
+
+bool BASE_OBJECT::ReadHeaderEx(const unsigned char* cData)
+{
+	if (cData == NULL)return false;
+	const unsigned char *buf = cData;
+
+	//////////////////////////////////////////////////////////////////////////
+	unsigned short s = 0;
+
+	s = buf[0] << 8;
+	s += buf[1];
+	_WebSocketheader.extended_size = s;
+
+	memcpy(_BUFF1 + 2, buf, 2);
 
 	return true;
 }
 
-bool BASE_OBJECT::DecodeRawData(const WebSocketStreamHeader& header, BYTE cbSrcData[], WORD wSrcLen, BYTE cbTagData[])
+bool BASE_OBJECT::DecodeRawData(BYTE cbSrcData[], WORD wSrcLen, BYTE cbTagData[])
 {
+	//////////////////////////////////////////////////////////////////////////
+	const WebSocketStreamHeader& header = _WebSocketheader;
+
+	//////////////////////////////////////////////////////////////////////////
 	const unsigned char *final_buf = cbSrcData;
 
 	if (wSrcLen < header.header_size + 1) {
@@ -163,21 +183,14 @@ bool BASE_OBJECT::DecodeRawData(const WebSocketStreamHeader& header, BYTE cbSrcD
 int BASE_OBJECT::parse_buff(char* _buff, size_t _len)
 {
 	int _code = -1;
-	memcpy(&_BUFF1[4], _buff, _len);
 
-	size_t _parseLen = 0;
+	const int _offset = _WebSocketheader.mask_offset;
+	memcpy(&_BUFF1[_offset], _buff, _len);
 
-	if( _WebSocketheader.payload_size < 126 )
-	{
-		_parseLen = _WebSocketheader.payload_size + 2;
-	}
-	else
-	{
-		_parseLen = _WebSocketheader.extended_size + 4;
-	}
+	const size_t _parseLen = _WebSocketheader.payload_size + _offset;
 
 	memset(_BUFF2, 0, sizeof(_BUFF2));	
-	if( DecodeRawData(_WebSocketheader, (BYTE*)_BUFF1, _parseLen, (BYTE*)_BUFF2) )
+	if( DecodeRawData((BYTE*)_BUFF1, _parseLen, (BYTE*)_BUFF2) )
 	{
 		//////////////////////////////////////////////////////////////////////////
 		_code = _WebSocketheader.opcode;
@@ -217,7 +230,7 @@ int BASE_OBJECT::parse_buff(char* _buff, size_t _len)
 	return _code;
 }
 
-bool BASE_OBJECT::sendMSG(std::string _msg)
+bool BASE_OBJECT::sendMSG(std::string _msg, ENUM_OP_TYPE _sendtype)
 {
 	bool _check = false;
 	memset(_pPerIo->buf, 0, BUFFER_SIZE);
@@ -229,7 +242,7 @@ bool BASE_OBJECT::sendMSG(std::string _msg)
 		if( ret > 2 )
 		{
 			//////////////////////////////////////////////////////////////////////////
-			NetworkSystem::Instance()->sendMSG(_pPerHandle, _pPerIo, ret, OP_WRITE);
+			NetworkSystem::Instance()->sendMSG(_pPerHandle, _pPerIo, ret, _sendtype);
 			_check = true;
 		}
 		else

@@ -72,6 +72,7 @@ void ClientObjectSystem::delBaseObject(__BRIDGE _client)
 
 		//////////////////////////////////////////////////////////////////////////
 		m_accountAlloc->releaseData(_obj);
+
 	}
 
 	m_lockForAccountMap.unlock();
@@ -130,9 +131,9 @@ bool ClientObjectSystem::checkHandsSuccess(__BRIDGE _client)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool ClientObjectSystem::readHeader(__BRIDGE _client, char* _buff)
+int ClientObjectSystem::readHeader(__BRIDGE _client, char* _buff)
 {
-	bool _status = false;
+	int _status = -1;
 
 	m_lockForAccountMap.lock();
 	ACCOUNT_MAP::iterator _cell = m_accountMap.find(_client);
@@ -141,20 +142,53 @@ bool ClientObjectSystem::readHeader(__BRIDGE _client, char* _buff)
 	{
 		BASE_OBJECT* _obj = _cell->second;	
 		
-		_status = _obj->ReadHeader((const unsigned char*)_buff, &_obj->_WebSocketheader);
-		if( _status )
+		_status = _obj->ReadHeader((const unsigned char*)_buff);
+
+		switch (_status)
 		{
-			if( _obj->_WebSocketheader.payload_size < 126 )
+		case 0:
 			{
-				NetworkSystem::Instance()->request_Recv(_obj->_pPerHandle, _obj->_pPerIo, OP_READ_DATA, _obj->_WebSocketheader.payload_size - 2 + 4);
+				NetworkSystem::Instance()->request_Recv(_obj->_pPerHandle, _obj->_pPerIo, OP_READ_DATA, _obj->_WebSocketheader.payload_size + 4);
+				break;
 			}
-			else
+		case 1:
 			{
-				NetworkSystem::Instance()->request_Recv(_obj->_pPerHandle, _obj->_pPerIo, OP_READ_DATA, _obj->_WebSocketheader.extended_size + 4);
+				NetworkSystem::Instance()->request_Recv(_obj->_pPerHandle, _obj->_pPerIo, OP_READ_HEADER_EX, 2);
+				break;
+			}
+		case -1:
+			{
+				break;
+			}
+		default:
+			{
+				break;
 			}
 		}
 	}
 
+	m_lockForAccountMap.unlock();
+
+	return _status;
+}
+
+int ClientObjectSystem::readHeaderEx(__BRIDGE _client, char* _buff)
+{
+	int _status = -1;
+
+	m_lockForAccountMap.lock();
+	ACCOUNT_MAP::iterator _cell = m_accountMap.find(_client);
+
+	if( m_accountMap.end() != _cell )
+	{
+		BASE_OBJECT* _obj = _cell->second;	
+
+		if( _obj->ReadHeaderEx((const unsigned char*)_buff) )
+		{
+			NetworkSystem::Instance()->request_Recv(_obj->_pPerHandle, _obj->_pPerIo, OP_READ_DATA, _obj->_WebSocketheader.extended_size + 4);
+			_status = 0;
+		}
+	}
 	m_lockForAccountMap.unlock();
 
 	return _status;

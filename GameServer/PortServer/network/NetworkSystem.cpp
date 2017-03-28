@@ -8,6 +8,9 @@
 #include "./../core/JackBase64.h"
 #include "./../core/ClientObjectSystem.h"
 
+ALLOC_PER_HANDLE_DATA _ALLOC_PER_HANDLE_DATA(MAX_CLIENT_CONN, "ALLOC IO HANDLE");
+ALLOC_PER_IO_DATA     _ALLOC_PER_IO_DATA(MAX_CLIENT_CONN, "ALLOC IO DATA");
+
 //////////////////////////////////////////////////////////////////////////
 NetworkSystem* _NETWORK_SYS = NULL;
 NetworkSystem* NetworkSystem::Instance()
@@ -136,23 +139,19 @@ void NetworkSystem::listen_connected()
 		SOCKET sRemote = accept( m_listener, (sockaddr *)&saRemote, &nRemoteLen );  
 		cout << "client join......" << endl; 
 
-		PPER_HANDLE_DATA pPerHandle =(PPER_HANDLE_DATA)::GlobalAlloc(GPTR, sizeof(PER_HANDLE_DATA));  
-		if( pPerHandle == NULL )   
-		{   
-			break;   
-		}  
+		PPER_HANDLE_DATA pPerHandle = //(PPER_HANDLE_DATA)::GlobalAlloc(GPTR, sizeof(PER_HANDLE_DATA));
+			_ALLOC_PER_HANDLE_DATA.createData();  
+		memset(pPerHandle, 0, sizeof(PER_HANDLE_DATA));
 
 		pPerHandle->s = sRemote;   
 		memcpy( &pPerHandle->addr, &saRemote, nRemoteLen );  
 
 		//关联iocp和接收socket  
 		CreateIoCompletionPort( ( HANDLE)pPerHandle->s, m_hIocp, (DWORD)pPerHandle, 0 );  
-		PPER_IO_DATA pIoData =(PPER_IO_DATA)GlobalAlloc(GPTR, sizeof(PER_IO_DATA));  
+		PPER_IO_DATA pIoData = //(PPER_IO_DATA)GlobalAlloc(GPTR, sizeof(PER_IO_DATA));
+			_ALLOC_PER_IO_DATA.createData();  
+		memset(pIoData, 0, sizeof(PER_IO_DATA));
 
-		if( pIoData == NULL )   
-		{   
-			break;   
-		}  
 
 		//////////////////////////////////////////////////////////////////////////
 		ClientObjectSystem::Instance()->addBaseObject(pPerHandle, pIoData);
@@ -172,22 +171,9 @@ void NetworkSystem::listen_connected()
 	}
 }
 
-void NetworkSystem::closeClientSocket( PPER_HANDLE_DATA pPerHandle, PPER_IO_DATA pPerIo )
+void NetworkSystem::closeClientSocket( PPER_HANDLE_DATA& pPerHandle, PPER_IO_DATA& pPerIo )
 {
-	if( pPerHandle )
-	{
-		ClientObjectSystem::Instance()->delBaseObject(pPerHandle->s);
-
-		closesocket( pPerHandle->s );   
-		GlobalFree( pPerHandle );   
-	}
-
-	if( pPerIo )
-	{
-		GlobalFree( pPerIo );  
-	}
-
-	cout << "client closed......" << endl;   
+	ClientObjectSystem::Instance()->delBaseObject(pPerHandle->s);
 }
 
 void NetworkSystem::sendMSG( PPER_HANDLE_DATA pPerHandle, PPER_IO_DATA pPerIo, size_t _buffsize, ENUM_OP_TYPE _type )
@@ -231,6 +217,9 @@ void NetworkSystem::work()
 		// 在关联到此完成端口的所有套接字上等待I/O完成   
 		BOOL bRet = GetQueuedCompletionStatus( hIocp, &dwTrans, (LPDWORD)&pPerHandle, (LPOVERLAPPED*)&pPerIo, WSA_INFINITE );   
 
+		PPER_HANDLE_DATA __pPerHandle = pPerHandle;   
+		PPER_IO_DATA     __pPerIo     = pPerIo; 
+
 		if( m_exitCommand )
 		{
 			break;
@@ -238,55 +227,91 @@ void NetworkSystem::work()
 
 		if( !bRet )     // 发生错误   
 		{   
-			closeClientSocket( pPerHandle, pPerIo );
+			closeClientSocket( __pPerHandle, __pPerIo );
 			cout << "error" << endl;   
 			continue;   
 		}  
 		else
 		// 套接字被对方关闭   
-		if( dwTrans == 0 && ( pPerIo->nOperationType == OP_READ_HEADER || pPerIo->nOperationType == OP_READ_DATA || pPerIo->nOperationType== OP_WRITE ) )   
+		if( dwTrans == 0 && ( __pPerIo->nOperationType == OP_READ_HEADER || __pPerIo->nOperationType == OP_READ_DATA || __pPerIo->nOperationType== OP_WRITE ) )   
 		{   
-			closeClientSocket( pPerHandle, pPerIo );
+			closeClientSocket( __pPerHandle, __pPerIo );
 			continue;   
 		}  
 		if( dwTrans >= BUFFER_SIZE )
 		{
 			//错误数据
-			closeClientSocket( pPerHandle, pPerIo );
+			closeClientSocket( __pPerHandle, __pPerIo );
 			continue;   
 		}
 
 		//读写请求压入事务线程中去
-		switch ( pPerIo->nOperationType )
+		switch ( __pPerIo->nOperationType )
 		{
 		case OP_READ_HEADER:
 			{
+				bool _check = false;
+
 				//收到数据包头 
-				if( dwTrans == 4 && ClientObjectSystem::Instance()->readHeader(pPerHandle->s, pPerIo->buf) )
+				if( dwTrans == 2 )
 				{
 					//
+					const int _status = ClientObjectSystem::Instance()->readHeader(pPerHandle->s, pPerIo->buf);
+
+					switch (_status)
+					{
+					case 0:
+						{
+							
+							_check = true;
+							break;
+						}
+					case 1:
+						{
+
+							_check = true;
+							break;
+						}
+					case -1:
+						{
+							break;
+						}
+					}
+				}
+
+				if( !_check )
+				{
+					//
+					closeClientSocket( __pPerHandle, __pPerIo );
+				}
+
+				break;
+			}
+		case OP_READ_HEADER_EX:
+			{
+				if( ClientObjectSystem::Instance()->readHeaderEx(pPerHandle->s, pPerIo->buf) == 0 )
+				{
 
 				}
 				else
 				{
-					//
-					closeClientSocket( pPerHandle, pPerIo );
+					closeClientSocket( __pPerHandle, __pPerIo );
 				}
 
 				break;
 			}
 		case OP_READ_DATA:
 			{
+				//////////////////////////////////////////////////////////////////////////
 				//收到数据包
 				if( dwTrans > 0 && ClientObjectSystem::Instance()->readData(pPerHandle->s, pPerIo->buf, dwTrans ) )
 				{
-					//
 
 				}
 				else
 				{
 					//
-					closeClientSocket( pPerHandle, pPerIo );
+					closeClientSocket( __pPerHandle, __pPerIo );
 				}
 
 				break;
@@ -294,6 +319,12 @@ void NetworkSystem::work()
 		case OP_WRITE:
 			{
 				request_Recv(pPerHandle, pPerIo);
+
+				break;
+			}
+		case OP_BRODCAST:
+			{
+
 				break;
 			}
 		case OP_ACCEPT:
@@ -309,7 +340,7 @@ void NetworkSystem::work()
 				else
 				{
 					//
-					closeClientSocket( pPerHandle, pPerIo );
+					closeClientSocket( __pPerHandle, __pPerIo );
 				}
 				
 				break;
@@ -327,7 +358,7 @@ void NetworkSystem::work()
 				else
 				{
 					//
-					closeClientSocket( pPerHandle, pPerIo );
+					closeClientSocket( __pPerHandle, __pPerIo );
 				}
 
 				break;

@@ -120,7 +120,7 @@ struct BASE_ROOM
 			BASE_PLAYER* _player = _Players[i];
 			if( _player != NULL && _player->_CLIENT && _player != _exceptplayer )
 			{
-				SEND_MSG(msg, _player->_CLIENT);
+				SEND_MSG(msg, _player->_CLIENT, OP_BRODCAST);
 			}
 		}
 	}

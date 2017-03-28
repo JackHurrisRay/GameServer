@@ -137,21 +137,21 @@ NET_CALLBACK(C2S_LOGIN)
 		MSG_S2C_LOGIN _msg;
 		_msg._dataLArray[0]->setNumber(_uid);
 		_msg._dataLArray[1]->setNumber(_player->_GOLD);
-		_msg._dataLArray[2]->setNumber(_player->_ROOMID);
+		_msg._dataLArray[2]->setString(_player->_KEY);
+		_msg._dataLArray[3]->setString(_player->_NickName);
 
-		_msg._dataLArray[3]->setNumber(0);
-
-		_msg._dataLArray[4]->setString(_player->_KEY);
-		_msg._dataLArray[5]->setString(_player->_NickName);
+		_msg._dataLArray[4]->setNumber(_player->_ROOMID);
+		_msg._dataLArray[5]->setNumber(0);
+		_msg._dataLArray[6]->setNumber(_player->_INDEX);
 
 		////
-		_msg._dataLArray[6]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
+		_msg._dataLArray[7]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
 
 		////
 		BASE_ROOM* _room = GameRooms::Instance()->get_room(_player->_ROOMID);
 		if( _room != NULL )
 		{
-			_msg._dataLArray[3]->setNumber(_room->_ROOM_ID_RANDFLAG);
+			_msg._dataLArray[5]->setNumber(_room->_ROOM_ID_RANDFLAG);
 		}
 
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);

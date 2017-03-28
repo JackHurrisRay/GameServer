@@ -49,6 +49,10 @@ enum ENUM_GAME_PROTOCAL
 	EGP_C2S_REQUEST_ROOMLIST       = EGP_START__LOGIN + 40,         //房主获取所开房间信息
 	EGP_S2C_REQUEST_ROOMLIST       = EGP_START__LOGIN + 41,
 
+	////
+	EGP_C2S_REQUEST_PLAYERSINROOM  = EGP_START__LOGIN + 50,         //获取房间内所有玩家信息
+	EGP_S2C_REQUEST_PLAYERSINROOM  = EGP_START__LOGIN + 51,      
+
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

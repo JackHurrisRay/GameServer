@@ -2,6 +2,8 @@
 #include "./../core/ClientObject.h"
 #include "message.h"
 #include "json/json.h"
+#include "./../core/ClientObject.h"
+#include "./../network/NetworkSystem.h"
 
 //////////////////////////////////////////////////////////////////////////
 ALLOC_PLAYER Players::_ALLOC_PLAYER = ALLOC_PLAYER(MAX_PLAYER_LIMIT, "PLAYER ALLOC");
@@ -82,6 +84,16 @@ bool BASE_PLAYER::loadData()
 
 void BASE_OBJECT::release()
 {
+	//////////////////////////////////////////////////////////////////////////
+	closesocket(_pPerHandle->s);
+
+	_ALLOC_PER_HANDLE_DATA.releaseData(_pPerHandle);
+	_ALLOC_PER_IO_DATA.releaseData(_pPerIo);
+
+	//GlobalFree(_pPerHandle);
+	//GlobalFree(_pPerIo);
+
+	//////////////////////////////////////////////////////////////////////////
 	BASE_PLAYER* _player = Players::Instance()->get_player(_UID);
 
 	if( _player != NULL )
@@ -89,6 +101,8 @@ void BASE_OBJECT::release()
 		_player->saveData();
 		_player->_CLIENT = NULL;
 	}
+
+	cout << "client closed......" << endl;  	
 }
 
 //////////////////////////////////////////////////////////////////////////

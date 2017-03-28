@@ -14,8 +14,8 @@ typedef std::list<HANDLE> HANDLE_LIST;
 //////////////////////////////////////////////////////////////////////////
 struct PER_HANDLE_DATA   
 {   
-	SOCKET      s;                   // 对应的套接字句柄   
-	sockaddr_in addr;                // 对方的地址  
+	SOCKET           s;                   // 对应的套接字句柄   
+	sockaddr_in      addr;                // 对方的地址  
 };
 
 typedef PER_HANDLE_DATA* PPER_HANDLE_DATA;  
@@ -27,9 +27,11 @@ enum  ENUM_OP_TYPE
 	OP_NONE   = 0,
 	OP_ACCEPT = 1,
 	OP_CHECKHANDS,
-	OP_READ_HEADER, //header
-	OP_READ_DATA,   //data
+	OP_READ_HEADER,     //header
+	OP_READ_HEADER_EX,
+	OP_READ_DATA,       //data
 	OP_WRITE,
+	OP_BRODCAST,        //
 };
 
 struct PER_IO_DATA   
@@ -40,6 +42,11 @@ struct PER_IO_DATA
 };
 typedef PER_IO_DATA* PPER_IO_DATA;  
 
+typedef MemAllocPool<PER_HANDLE_DATA> ALLOC_PER_HANDLE_DATA;
+typedef MemAllocPool<PER_IO_DATA>     ALLOC_PER_IO_DATA;
+
+extern ALLOC_PER_HANDLE_DATA _ALLOC_PER_HANDLE_DATA;
+extern ALLOC_PER_IO_DATA     _ALLOC_PER_IO_DATA;
 //////////////////////////////////////////////////////////////////////////
 enum  ENUM_LOCKER_TYPE
 {
@@ -77,7 +84,7 @@ protected:
 	friend DWORD WINAPI thread_main( LPVOID lpParam );
 	friend DWORD WINAPI thread_logic( LPVOID lpParam );
 
-	void closeClientSocket( PPER_HANDLE_DATA pPerHandle, PPER_IO_DATA pPerIo );
+	void closeClientSocket( PPER_HANDLE_DATA& pPerHandle, PPER_IO_DATA& pPerIo );
 
 	void listen_connected();
 	void work();
@@ -94,7 +101,7 @@ public:
 	void cmdEnd();
 
 	void sendMSG( PPER_HANDLE_DATA pPerHandle, PPER_IO_DATA pPerIo, size_t _buffsize, ENUM_OP_TYPE _type );
-	void request_Recv( PPER_HANDLE_DATA pPerHandle, PPER_IO_DATA pPerIo, ENUM_OP_TYPE _type = OP_READ_HEADER, size_t _size = 4 );
+	void request_Recv( PPER_HANDLE_DATA pPerHandle, PPER_IO_DATA pPerIo, ENUM_OP_TYPE _type = OP_READ_HEADER, size_t _size = 2 );
 };
 
 #endif

@@ -26,7 +26,8 @@ public:
 	bool checkHandsFromClient(__BRIDGE, char*);
 	bool checkHandsSuccess(__BRIDGE);
 
-	bool readHeader(__BRIDGE, char*);
+	int  readHeader(__BRIDGE, char*);
+	int  readHeaderEx(__BRIDGE, char*);
 	bool readData(__BRIDGE, char*, size_t _len);
 
 	void PushMSGFromClient(__BRIDGE, char*);

@@ -5,6 +5,7 @@
 
 #include <map>
 #include "MemAllocPool.h"
+#include "./../network/NetworkSystem.h"
 
 //////////////////////////////////////////////////////////////////////////
 #define MAX_OBJ_LOAD_DATA 1024 * 2
@@ -93,17 +94,18 @@ struct BASE_OBJECT
 	int  packet_buff(std::string inMessage, char* _OUT_BUFF);
 
 	//////////////////////////////////////////////////////////////////////////
-	bool ReadHeader(const unsigned char* cData, WebSocketStreamHeader* header);
-	bool DecodeRawData(const WebSocketStreamHeader& header, BYTE cbSrcData[], WORD wSrcLen, BYTE cbTagData[]);
+	int  ReadHeader(const unsigned char* cData);
+	bool ReadHeaderEx(const unsigned char* cData);
 
-	bool sendMSG(std::string _msg);
+	bool DecodeRawData(BYTE cbSrcData[], WORD wSrcLen, BYTE cbTagData[]);
+	bool sendMSG(std::string _msg, ENUM_OP_TYPE _sendtype);
 };
 
 typedef MemAllocPool<BASE_OBJECT> BASE_OBJECT_ALLOC;
 typedef std::map<__BRIDGE, BASE_OBJECT*> ACCOUNT_MAP;
 
 template<class Message>
-bool SEND_MSG(Message msg, BASE_OBJECT* client)
+bool SEND_MSG(Message msg, BASE_OBJECT* client, ENUM_OP_TYPE _sendtype = OP_WRITE)
 {
 	//////////////////////////////////////////////////////////////////////////
 	Message& _Msg = msg;
@@ -114,7 +116,7 @@ bool SEND_MSG(Message msg, BASE_OBJECT* client)
 	std::string _OUT = _output;//JackBase64::base64_encode((const unsigned char*)_output.c_str(), _output.size());
 
 	//////////////////////////////////////////////////////////////////////////
-	return client->sendMSG(_OUT);
+	return client->sendMSG(_OUT, _sendtype);
 }
 
 #endif // !_CLIENTOBJECT_H
