@@ -1,6 +1,7 @@
 #include "GameRoom.h"
 #include "./../core/ClientObject.h"
 #include "message.h"
+#include "json/json.h"
 #include <time.h>
 
 extern unsigned int GET_RAND();
@@ -260,6 +261,40 @@ void BASE_ROOM::getPlayersInRoom(PLAYER_LIST& _playerList)
 	}
 }
 
+bool BASE_ROOM::getPlayersInfo(std::string& _info)
+{
+	Json::Value _root;
+	bool _check = false;
+	_info = "";
+
+	for( int i=0; i<MAX_PLAYER_IN_ROOM; i++ )
+	{
+		BASE_PLAYER* _player = _Players[i];
+		if( _player != NULL )
+		{
+			Json::Value _playerData;
+
+			_playerData[JSON_PLAYER_UID] = _player->_PLAYER_ID;
+			_playerData[JSON_PLAYER_KEY] = _player->_KEY;
+			_playerData[JSON_PLAYER_NICKNAME] = _player->_NickName;
+			_playerData[JSON_PLAYER_INDEXINROOM] = _player->_INDEX;
+
+			_root.append(_playerData);
+
+			_check = true;
+		}
+	}
+
+	if( _check )
+	{
+		Json::FastWriter _writer;
+		_info = _writer.write(_root);
+	}
+
+	return _check;
+
+}
+
 /************************************************************************/
 /*                                                                      */
 /************************************************************************/
@@ -351,7 +386,7 @@ ENUM_ROOM_ERROR GameRooms::enterRoom(int _rand_key, BASE_PLAYER* _player, const 
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	if( _player->_ROOMID > 0 && _player->_ROOMID == _room->_ROOM_ID )
+	if( _player->_ROOMID >= 0 && _player->_ROOMID == _room->_ROOM_ID )
 	{
 		BASE_PLAYER* _findPlayer = NULL;
 		for( int i=0; i<MAX_PLAYER_IN_ROOM; i++ )
@@ -361,6 +396,7 @@ ENUM_ROOM_ERROR GameRooms::enterRoom(int _rand_key, BASE_PLAYER* _player, const 
 			if( _room_player == _player )
 			{
 				_findPlayer = _room_player;
+				break;
 			}
 		}
 

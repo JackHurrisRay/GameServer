@@ -4,7 +4,9 @@
 #include "./../core/ProtocalFactory.h"
 #include "protocal.h"
 
+#define JSON_TIME                        "time"
 #define JSON_FLAG                        "flag"
+
 #define JSON_PLAYER_KEY                  "player_key"
 #define JSON_PLAYER_NICKNAME             "player_nickname"
 #define JSON_PLAYER_IMG                  "player_img"
@@ -26,17 +28,39 @@
 #define JSON_ROOM_PLAYERCOUNT            "room_player_count"
 #define JSON_ROOM_MAX_AROUND             "room_max_around"
 
+#define JSON_ROOM_PLAYERSINFO_DATA       "room_players_info"
+
 #define JSON_EX_DATA                     "extern_data"
 
 #define JSON_STATUS                      "STATUS"
 
+//////////////////////////////////////////////////////////////////////////
+struct MSG_C2S_HEART:
+	public BASE_PROTOCAL_MSG
+{
+	MSG_C2S_HEART():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_C2S_HEART)
+	{
+
+	}
+};
+
+struct MSG_S2C_HEART:
+	public BASE_PROTOCAL_MSG
+{
+	MSG_S2C_HEART():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_HEART)
+	{
+		
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
 struct MSG_C2S_LOGIN:
 	public BASE_PROTOCAL_MSG
 {
 	MSG_C2S_LOGIN():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_C2S_LOGIN)
 	{
 		//key值利用微信登录ID
-		initializeParam(2, JSON_PLAYER_KEY, JSON_PLAYER_IMG, "", "");
+		initializeParam(2, JSON_PLAYER_KEY, JSON_PLAYER_IMG);
 	}
 };
 
@@ -45,10 +69,10 @@ struct MSG_S2C_LOGIN:
 {
 	MSG_S2C_LOGIN():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_LOGIN)
 	{
-		initializeParam(8, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, 
+		initializeParam(9, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, 
 			JSON_PLAYER_KEY, JSON_PLAYER_NICKNAME, 
 			JSON_ROOM_ID, JSON_ROOM_RANDKEY, JSON_PLAYER_INDEXINROOM,
-			JSON_EX_DATA);
+			JSON_EX_DATA, JSON_ROOM_PLAYERSINFO_DATA);
 	}
 };
 
@@ -103,7 +127,8 @@ struct MSG_S2C_ENTER_ROOM:
 {
 	MSG_S2C_ENTER_ROOM():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_ALL_ENTER_ROOM)
 	{
-		initializeParam(6, JSON_ROOM_ID, JSON_ROOM_RANDKEY, JSON_PLAYER_UID, JSON_PLAYER_KEY, JSON_PLAYER_NICKNAME, JSON_PLAYER_INDEXINROOM);
+		initializeParam(7, JSON_ROOM_ID, JSON_ROOM_RANDKEY, JSON_PLAYER_UID, JSON_PLAYER_KEY, JSON_PLAYER_NICKNAME, JSON_PLAYER_INDEXINROOM,
+			JSON_ROOM_PLAYERSINFO_DATA);
 	}
 };
 

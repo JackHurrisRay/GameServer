@@ -85,13 +85,17 @@ bool BASE_PLAYER::loadData()
 void BASE_OBJECT::release()
 {
 	//////////////////////////////////////////////////////////////////////////
-	closesocket(_pPerHandle->s);
+	if( _pPerHandle != NULL )
+	{
+		closesocket(_pPerHandle->s);
+		_pPerHandle->s = 0;
 
-	_ALLOC_PER_HANDLE_DATA.releaseData(_pPerHandle);
-	_ALLOC_PER_IO_DATA.releaseData(_pPerIo);
+		_ALLOC_PER_HANDLE_DATA.releaseData(_pPerHandle);
+		_ALLOC_PER_IO_DATA.releaseData(_pPerIo);
 
-	//GlobalFree(_pPerHandle);
-	//GlobalFree(_pPerIo);
+		_pPerHandle = NULL;
+		_pPerIo     = NULL;
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	BASE_PLAYER* _player = Players::Instance()->get_player(_UID);
@@ -101,6 +105,10 @@ void BASE_OBJECT::release()
 		_player->saveData();
 		_player->_CLIENT = NULL;
 	}
+
+	lockMSGList();
+	_MSG_LIST.clear();
+	unlockMSGList();
 
 	cout << "client closed......" << endl;  	
 }

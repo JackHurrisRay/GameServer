@@ -37,6 +37,31 @@ void BASE_OBJECT::reset()
 	memset(_BUFF1, 0, sizeof(BUFFER_SIZE));
 	memset(_BUFF2, 0, sizeof(BUFFER_SIZE));
 
+	lockMSGList();
+	_MSG_LIST.clear();
+	unlockMSGList();
+}
+
+void BASE_OBJECT::lockMSGList(){_MSG_LIST_Lock.lock();};
+void BASE_OBJECT::unlockMSGList(){_MSG_LIST_Lock.unlock();};
+
+bool BASE_OBJECT::popMessage()
+{
+	bool _check = false;
+
+	if( _MSG_LIST.size() > 0 )
+	{
+		std::string _OUT = *_MSG_LIST.begin();
+
+		lockMSGList();
+		_MSG_LIST.pop_front();
+		unlockMSGList();
+
+		sendMSG(_OUT, OP_WRITE);
+		_check = true;
+	}
+
+	return _check;
 }
 
 /*
@@ -56,6 +81,18 @@ int BASE_OBJECT::ReadHeader(const unsigned char* cData)
 
 	//////////////////////////////////////////////////////////////////////////
 	header->fin = buf[0] & 0x80;
+	if( header->fin == 0 )
+	{
+		return 0xFF;
+	}
+
+	char _rsv = buf[0] & 0x70;
+	if( _rsv != 0 )
+	{
+		return -1;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
 	header->masked = buf[1] & 0x80;
 	unsigned char stream_size = buf[1] & 0x7F;
 

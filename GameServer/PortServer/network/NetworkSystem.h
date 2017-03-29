@@ -32,6 +32,7 @@ enum  ENUM_OP_TYPE
 	OP_READ_DATA,       //data
 	OP_WRITE,
 	OP_BRODCAST,        //
+	OP_BRODCAST_GOON,   //
 };
 
 struct PER_IO_DATA   

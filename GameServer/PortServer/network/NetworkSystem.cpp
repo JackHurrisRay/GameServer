@@ -78,6 +78,10 @@ void NetworkSystem::start(int port)
 	int ThreadNum=sysInfo.dwNumberOfProcessors*2+2;  
 	HANDLE hEvent;
 
+	//////////////////////////////////////////////////////////////////////////
+	//ThreadNum = 1;
+
+	//////////////////////////////////////////////////////////////////////////
 	for(int i=0;i<ThreadNum;i++)  
 	{  
 		HANDLE hThread;  
@@ -255,6 +259,7 @@ void NetworkSystem::work()
 				//收到数据包头 
 				if( dwTrans == 2 )
 				{
+
 					//
 					const int _status = ClientObjectSystem::Instance()->readHeader(pPerHandle->s, pPerIo->buf);
 
@@ -319,11 +324,17 @@ void NetworkSystem::work()
 		case OP_WRITE:
 			{
 				request_Recv(pPerHandle, pPerIo);
-
 				break;
 			}
 		case OP_BRODCAST:
 			{
+
+
+				break;
+			}
+		case OP_BRODCAST_GOON:
+			{
+
 
 				break;
 			}

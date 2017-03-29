@@ -25,6 +25,8 @@ CProtocalFactory::Instance()->bind_func(ENUM_GAME_PROTOCAL::EGP_##X, &NET_CALLBA
 	//////////////////////////////////////////////////////////////////////////
 	std::cout << "...init protocal..." << std::endl;
 
+	BIND_CALLBACK(C2S_HEART);
+
 	BIND_CALLBACK(C2S_LOGIN);
 	BIND_CALLBACK(C2S_GETPLAYERDATA);
 
@@ -77,6 +79,22 @@ BASE_PLAYER* player = Players::Instance()->get_player(client->_UID);
 /************************************************************************/
 /* Ð­Òé½âÎö                                                              */
 /************************************************************************/
+NET_CALLBACK(C2S_HEART)
+{
+	//////////////////////////////////////////////////////////////////////////
+	CHECK_MSG_PARAM(MSG_S2C_HEART);
+	CHECK_MSG_LOGIN(client);
+	GET_PLAYER;
+
+	if( !client->popMessage() )
+	{
+		MSG_S2C_HEART _msg;
+		SEND_MSG<MSG_S2C_HEART>(_msg, client);
+	}
+
+	return true;
+}
+
 NET_CALLBACK(C2S_LOGIN)
 {
 	CHECK_MSG_PARAM(MSG_C2S_LOGIN);
@@ -152,6 +170,12 @@ NET_CALLBACK(C2S_LOGIN)
 		if( _room != NULL )
 		{
 			_msg._dataLArray[5]->setNumber(_room->_ROOM_ID_RANDFLAG);
+
+			std::string _room_player_info;
+			if( _room->getPlayersInfo(_room_player_info) )
+			{
+				_msg._dataLArray[8]->setString(_room_player_info.c_str());
+			}
 		}
 
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);
@@ -314,7 +338,16 @@ NET_CALLBACK(C2S_ENTER_ROOM)
 		_msg._dataLArray[5]->setNumber(player->_INDEX);
 
 		//////////////////////////////////////////////////////////////////////////
-		_room->brodcast<MSG_S2C_ENTER_ROOM>(_msg);
+		_room->brodcast<MSG_S2C_ENTER_ROOM>(_msg, player);
+
+		//////////////////////////////////////////////////////////////////////////
+		std::string _room_player_info;
+		if( _room->getPlayersInfo(_room_player_info) )
+		{
+			_msg._dataLArray[6]->setString(_room_player_info.c_str());
+		}
+
+		SEND_MSG<MSG_S2C_ENTER_ROOM>(_msg, client);
 	}
 	else
 	{

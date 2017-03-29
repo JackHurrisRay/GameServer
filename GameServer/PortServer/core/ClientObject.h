@@ -51,6 +51,8 @@ struct BIG_BUFF
 typedef MemAllocPool<BIG_BUFF> ALLOC_BIG_BUFF;
 extern ALLOC_BIG_BUFF _ALLOC_BIG_BUFF;
 
+typedef std::list<std::string> STRING_LIST;
+
 struct PER_HANDLE_DATA;
 struct PER_IO_DATA;
 
@@ -77,6 +79,8 @@ struct BASE_OBJECT
 
 	//////////////////////////////////////////////////////////////////////////
 	WebSocketStreamHeader  _WebSocketheader;
+	STRING_LIST            _MSG_LIST;
+	Locker                 _MSG_LIST_Lock;
 
 	bool                   _bHandshake;      //Œ’ ÷≥…π¶
 
@@ -99,6 +103,11 @@ struct BASE_OBJECT
 
 	bool DecodeRawData(BYTE cbSrcData[], WORD wSrcLen, BYTE cbTagData[]);
 	bool sendMSG(std::string _msg, ENUM_OP_TYPE _sendtype);
+
+	//////////////////////////////////////////////////////////////////////////
+	void lockMSGList();
+	void unlockMSGList();
+	bool popMessage();
 };
 
 typedef MemAllocPool<BASE_OBJECT> BASE_OBJECT_ALLOC;
@@ -117,6 +126,23 @@ bool SEND_MSG(Message msg, BASE_OBJECT* client, ENUM_OP_TYPE _sendtype = OP_WRIT
 
 	//////////////////////////////////////////////////////////////////////////
 	return client->sendMSG(_OUT, _sendtype);
+}
+
+template<class Message>
+void PUSH_MSG(Message msg, BASE_OBJECT* client)
+{
+	//////////////////////////////////////////////////////////////////////////
+	Message& _Msg = msg;
+	std::string _output;
+	_Msg.package(_output);
+
+	//////////////////////////////////////////////////////////////////////////
+	std::string _OUT = _output;
+
+	//////////////////////////////////////////////////////////////////////////
+	client->lockMSGList();
+	client->_MSG_LIST.push_back(_OUT);
+	client->unlockMSGList();
 }
 
 #endif // !_CLIENTOBJECT_H

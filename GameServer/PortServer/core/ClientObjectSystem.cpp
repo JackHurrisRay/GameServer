@@ -156,6 +156,13 @@ int ClientObjectSystem::readHeader(__BRIDGE _client, char* _buff)
 				NetworkSystem::Instance()->request_Recv(_obj->_pPerHandle, _obj->_pPerIo, OP_READ_HEADER_EX, 2);
 				break;
 			}
+		case 0xFF:
+			{
+				//while fin == 0, go on get header
+				NetworkSystem::Instance()->request_Recv(_obj->_pPerHandle, _obj->_pPerIo);
+
+				break;
+			}
 		case -1:
 			{
 				break;

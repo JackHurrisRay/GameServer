@@ -120,10 +120,14 @@ struct BASE_ROOM
 			BASE_PLAYER* _player = _Players[i];
 			if( _player != NULL && _player->_CLIENT && _player != _exceptplayer )
 			{
-				SEND_MSG(msg, _player->_CLIENT, OP_BRODCAST);
+				//SEND_MSG(msg, _player->_CLIENT, OP_BRODCAST);
+				PUSH_MSG(msg, _player->_CLIENT);
 			}
 		}
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+	bool getPlayersInfo(std::string& _info);
 };
 typedef BASE_ROOM* LP_BASE_ROOM;
 typedef std::list<LP_BASE_ROOM> ROOM_LIST;
