@@ -1,4 +1,9 @@
 #include "GameDouNiu.h"
+#include "game_common.h"
+#include "GameRoom.h"
+#include "json/json.h"
+
+#include "./../game/message.h"
 
 //////////////////////////////////////////////////////////////////////////
 ALLOC_POKECARD GAME_DOU_NIU::_ALLOC_POKECARD(MAX_ROOM_LIMIT, "ALLOC POKECARD");
@@ -199,7 +204,18 @@ bool check_niu(BASE_POKE_CARD** _cardArray, BASE_POKE_CARD* _lastCard[2])
 
 typedef bool FUNC_CHECK_NIU(BASE_POKE_CARD** _cardArray, BASE_POKE_CARD*& _flagCard);
 
-ENUM_WIN_CARD_TYPE PLAYER_DATA::process_WinCard(BASE_POKE_CARD*& _flagCard)
+//////////////////////////////////////////////////////////////////////////
+void GAME_PLAYER_DATA::resetData()
+{
+	_status = EPS_NONE;
+	_SCORE  = 0;
+	_zhuang = 0;
+	_double = 0;
+	
+	memset(_card, 0, sizeof(BASE_POKE_CARD) * MAX_CARD_PER_PLAYER);
+}
+
+ENUM_WIN_CARD_TYPE GAME_PLAYER_DATA::process_WinCard(BASE_POKE_CARD*& _flagCard)
 {
 	ENUM_WIN_CARD_TYPE _type = EWCT_NONE;
 
@@ -254,27 +270,116 @@ ENUM_WIN_CARD_TYPE PLAYER_DATA::process_WinCard(BASE_POKE_CARD*& _flagCard)
 }
 
 //////////////////////////////////////////////////////////////////////////
+/************************************************************************/
+/*                                                                      */
+/************************************************************************/
+ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::readyGame()
+{
+	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
+
+	if( _status == EPS_NONE )
+	{
+		_status = EPS_READY;
+		_hr     = EGSE_OK;
+		_zhuang = 0;
+	}
+	else
+	{
+		_hr = EGSE_CURRENT_STATUS_ERROR;
+	}
+
+	return _hr;
+}
+
+ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::cancelReady()
+{
+	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
+
+	if( _status == EPS_READY )
+	{
+		_status = EPS_NONE;
+		_hr = EGSE_OK;
+	}
+	else
+	{
+		_hr = EGSE_CURRENT_STATUS_ERROR;
+	}
+
+	return _hr;
+}
+
+ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::fightForZhuang(int _value)
+{
+	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
+
+	if( _value <= 0 )
+	{
+		return EGSE_DATA_ERROR;
+	}
+
+	if( _status == EPS_READY )
+	{
+		_zhuang = _value;
+		_status = EPS_FIGHT_FOR_ZHUANG;
+		_hr = EGSE_OK;
+	}
+	else
+	{
+		_hr = EGSE_CURRENT_STATUS_ERROR;
+	}
+
+	return _hr;
+}
+
+/************************************************************************/
+/*                                                                      */
+/************************************************************************/
 GAME_DOU_NIU::GAME_DOU_NIU():
 	_PokeCard(_ALLOC_POKECARD.createData())
 {
 
 }
 
-void GAME_DOU_NIU::take_poke_to_players()
+bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info)
 {
-	const LP_BASE_POKE_CARD* _cardArray = _PokeCard->get_card_array();
+	bool _check = false;
 
-	int _card_index = 0;
+	Json::Value _root;
 
-	PLAYER_DATA_LIST::iterator cell;
+	PLAYER_LIST _playerList;
+	_room->getPlayersInRoom(_playerList);
 
-	for( cell = _player_list.begin(); cell != _player_list.end(); cell++ )
+	if( _playerList.size() > 1 )
 	{
-		PLAYER_DATA* _player_data = *cell;
-
-		for( int i=0; i<5; i++ )
+		PLAYER_LIST::iterator cell;
+		for( cell = _playerList.begin(); cell != _playerList.end(); cell++ )
 		{
-			_player_data->_card[i] = _cardArray[_card_index++];
+			BASE_PLAYER* _player = *cell;
+
+			Json::Value _playerJsonData;
+
+			_playerJsonData[JSON_PLAYER_UID] = _player->_PLAYER_ID;
+			_playerJsonData[JSON_PLAYER_KEY] = _player->_KEY;
+			_playerJsonData[JSON_ZHUANG]     = ( _room->_zhuangPlayer == _player )?1:0;
+
+			for( int i=0; i<MAX_CARD_PER_PLAYER; i++ )
+			{
+				_playerJsonData[JSON_POKECARD].append( _player->_card[i]->_guid );
+			}
+
+			_root.append(_playerJsonData);
+
+			_check = true;
 		}
+
+		if( _check )
+		{
+			Json::FastWriter _writer;
+			_info = _writer.write(_root);
+		}
+
+		_check = true;
 	}
+
+	return _check;
 }

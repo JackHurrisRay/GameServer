@@ -11,6 +11,7 @@ ALLOC_PLAYER Players::_ALLOC_PLAYER = ALLOC_PLAYER(MAX_PLAYER_LIMIT, "PLAYER ALL
 //////////////////////////////////////////////////////////////////////////
 void BASE_PLAYER::initData()
 {
+	//////////////////////////////////////////////////////////////////////////
 	memset(_KEY, 0, sizeof(_KEY));
 	memset(_NickName, 0, sizeof(_NickName));
 	
@@ -21,7 +22,13 @@ void BASE_PLAYER::initData()
 	_ROOMID    = -1;
 	_INDEX     = -1;
 	_CLIENT    = NULL;
-	
+
+	//////////////////////////////////////////////////////////////////////////
+	_status = EPS_NONE;
+	_zhuang = 0;
+	_double = 1;
+
+	resetData();
 }
 
 void BASE_PLAYER::release()

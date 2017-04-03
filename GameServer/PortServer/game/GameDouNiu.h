@@ -4,32 +4,31 @@
 /************************************************************************/
 /* 该模块逻辑为具体游戏模块逻辑，可以分离                                  */
 /************************************************************************/
-#include "Player.h"
 #include "PokeCard.h"
 
-//房间的状态
-enum ENUM_GAME_STATUS
-{
-	EGS_NONE = 0,
-	EGS_FIGHT_FOR_ZHUANG,                                                   //抢庄 以下注最大者得          或者为轮庄阶段 开始下注
-	EGS_DEALER,                                                             //发牌 5张全发，并且选择牛牌
-	EGS_NIU,                                                                //选三张牛牌，并且再次选择翻倍， 随后开始比较结果
+struct BASE_PLAYER;
+
+/************************************************************************
+ENTER ROOM : Player -> EPS_NONE
+READY GAME : Player -> EPS_READY  if cancel Player -> EPS_NONE
+WHEN ALL Players -> EPS_READY GAME START
 
 
-};
 
+************************************************************************/
 //房间内玩家的状态
 enum ENUM_PLAYER_STATUS
 {
 	EPS_NONE = 0,
-	EPS_READY,                                                              //玩家准备状态，可以点开始了
-	EPS_FIGHT_FOR_ZHUANG,                                                   //玩家抢庄状态，此时玩家开始下注抢庄
-	EPS_DEALER,                                                             //抢完庄以后， 玩家进入发牌状态，此时，玩家可以选牛并且下注
-	EPS_RESULT,                                                             //玩家开始算牛，结果发放客户端
+	EPS_READY,                                                              //玩家准备好了，等待全体到达这个状态， 游戏自动开始然后可以开始抢庄
+	EPS_FIGHT_FOR_ZHUANG,                                                   //玩家抢完庄，等待全体到达这个状态, 然后可以开始发牌
+	EPS_DEALER,                                                             //发完牌了，玩家可以加倍
+	EPS_RESULT,                                                             //加倍完了，则玩家等待游戏结果，游戏结果发还以后，状态重置为EPS_NONE
 
+	EPS_MAX,                                                                //标识符，没有任何意义
 };
 
-//
+//牌型种类
 enum ENUM_WIN_CARD_TYPE
 {
 	EWCT_NONE = 0,
@@ -53,52 +52,61 @@ enum ENUM_WIN_CARD_TYPE
 
 };
 
-//////////////////////////////////////////////////////////////////////////
-struct PLAYER_DATA
+//游戏过程中错误
+enum ENUM_GAME_STATUS_ERROR
 {
-	BASE_PLAYER*        _player;
+	EGSE_OK = 0,
+	EGSE_UNKNOWN = 100,                   //未知错误
+	EGSE_DATA_ERROR,                      //数据错误
+	EGSE_CURRENT_STATUS_ERROR,            //当前状态不正确
+	EGSE_RIGHT_LIMITED,                   //当前权限不正确
+};
+
+#define MAX_CARD_PER_PLAYER 5
+//////////////////////////////////////////////////////////////////////////
+struct GAME_PLAYER_DATA
+{
 	ENUM_PLAYER_STATUS  _status;
-	unsigned char       _zhuang;                                            //庄
+
+	long long           _SCORE;                                             //玩家分数
+
+	unsigned char       _zhuang;                                            //庄的值
 	unsigned char       _double;                                            //翻倍
 
-	BASE_POKE_CARD*     _card[5];                                           //手牌
+	BASE_POKE_CARD*     _card[MAX_CARD_PER_PLAYER];                         //手牌
 
 	//////////////////////////////////////////////////////////////////////////
 	ENUM_WIN_CARD_TYPE process_WinCard(BASE_POKE_CARD*& _flagCard);
+	void resetData();
+
+	//////////////////////////////////////////////////////////////////////////
+	ENUM_GAME_STATUS_ERROR readyGame();
+	ENUM_GAME_STATUS_ERROR cancelReady();
+	ENUM_GAME_STATUS_ERROR fightForZhuang(int _value);
+	ENUM_GAME_STATUS_ERROR doubleScore(int _double);
 
 };
-typedef MemAllocPool<PLAYER_DATA> ALLOC_PLAYER_DATA;
-typedef std::list<PLAYER_DATA*> PLAYER_DATA_LIST;
 
 //////////////////////////////////////////////////////////////////////////
+struct BASE_ROOM;
 struct GAME_DOU_NIU
 {
 	//////////////////////////////////////////////////////////////////////////
 	static ALLOC_POKECARD _ALLOC_POKECARD;
+	ENUM_PLAYER_STATUS    _PLAYERS_STATUS;
 
 	//////////////////////////////////////////////////////////////////////////
-	PLAYER_DATA_LIST _player_list;                                          //玩家列表
-
 	CPokeCard*       _PokeCard;                                             //需要有一副牌
+	BASE_PLAYER*     _zhuangPlayer;
+	unsigned char    _zhuangValue;                                          //庄
 
-	ENUM_GAME_STATUS _game_status;
-	unsigned char    _zhuang_double;                                        //庄倍数
+	//////////////////////////////////////////////////////////////////////////
+	std::string      _INFO_playersPokeCard;
 
 	//////////////////////////////////////////////////////////////////////////
 	GAME_DOU_NIU();
-	~GAME_DOU_NIU();
 
-	//////////////////////////////////////////////////////////////////////////
-	void player_ready(BASE_PLAYER* _player);                                //初始化玩家数据
-	void fight_zhuang(BASE_PLAYER* _player);                                //抢庄
-	void make_double(BASE_PLAYER* _player);                                 //加倍
-
-
-	//////////////////////////////////////////////////////////////////////////
-	void take_poke_to_players();                                            //发牌
-
-
-
+	static bool getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info);
 };
 
 #endif

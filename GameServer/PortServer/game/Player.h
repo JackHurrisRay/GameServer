@@ -3,6 +3,8 @@
 #include "./../core/MemAllocPool.h"
 #include "game_common.h"
 
+#include "GameDouNiu.h"
+
 enum ENUM_PLAYER_TYPE
 {
 	EPT_NONE = 0,
@@ -12,7 +14,8 @@ enum ENUM_PLAYER_TYPE
 };
 
 struct BASE_OBJECT;
-struct BASE_PLAYER
+struct BASE_PLAYER:
+	public GAME_PLAYER_DATA
 {
 	//////////////////////////////////////////////////////////////////////////
 	char                _KEY[MAX_KEY_COUNT];                                //玩家唯一标识
@@ -33,6 +36,7 @@ struct BASE_PLAYER
 
 	//////////////////////////////////////////////////////////////////////////
 	void initData();
+
 	void release();
 
 

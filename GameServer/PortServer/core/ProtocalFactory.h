@@ -16,6 +16,7 @@ enum ENUM_PROTOCAL_ERROR
 
 	//////////////////////////////////////////////////////////////////////////
 	PROTOCAL_ERROR_ROOM          = 301,       //房间相关错误
+	PROTOCAL_ERROR_GAME          = 401,       //游戏过程中状态错误
 
 };
 

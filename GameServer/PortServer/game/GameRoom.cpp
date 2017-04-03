@@ -104,6 +104,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////
 BASE_ROOM::BASE_ROOM():
+	GAME_DOU_NIU(),
 	_ROOM_ID_RANDFLAG(_ROOM_RAND_FLAG.POP_VALUE())
 {
 
@@ -278,6 +279,7 @@ bool BASE_ROOM::getPlayersInfo(std::string& _info)
 			_playerData[JSON_PLAYER_KEY] = _player->_KEY;
 			_playerData[JSON_PLAYER_NICKNAME] = _player->_NickName;
 			_playerData[JSON_PLAYER_INDEXINROOM] = _player->_INDEX;
+			_playerData[JSON_PLAYER_GAMESTATUS] = _player->_status;
 
 			_root.append(_playerData);
 
@@ -311,7 +313,7 @@ GameRooms::~GameRooms(void)
 	delete[] m_rooms;
 }
 
-BASE_ROOM* GameRooms::get_room(unsigned short room_id)
+BASE_ROOM* GameRooms::get_room(short room_id)
 {
 	BASE_ROOM* _room = NULL;
 
@@ -379,6 +381,11 @@ ENUM_ROOM_ERROR GameRooms::enterRoom(int _rand_key, BASE_PLAYER* _player, const 
 		return ERE_ROOM_IS_NOT_EXIST;//房间不存在
 	}
 
+	if(_room->_room_status == ERS_INGAME )
+	{
+		return ERE_ROOM_IN_GAME;
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	if( _player->_ROOMID > 0 && _player->_ROOMID != _room->_ROOM_ID )
 	{
@@ -442,6 +449,9 @@ ENUM_ROOM_ERROR GameRooms::enterRoom(int _rand_key, BASE_PLAYER* _player, const 
 		_player->_ROOMID = _room->_ROOM_ID;
 		_player->_INDEX  = _player_index_in_room;
 
+		//////////////////////////////////////////////////////////////////////////
+		_player->_status = EPS_NONE;
+
 		_result = ERE_ROOM_OK;
 	}
 	else
@@ -496,6 +506,9 @@ ENUM_ROOM_ERROR GameRooms::leaveRoom(BASE_PLAYER* _player, BASE_ROOM*& _room)
 	_room->_Players[_player_index] = NULL;
 	_player->_ROOMID = -1;
 	_player->_INDEX  = -1;
+
+	//////////////////////////////////////////////////////////////////////////
+	_player->_status = EPS_NONE;
 
 	_result = ERE_ROOM_OK;
 

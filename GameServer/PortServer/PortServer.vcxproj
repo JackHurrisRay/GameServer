@@ -142,6 +142,7 @@
     <ClCompile Include="game\GameDouNiu.cpp" />
     <ClCompile Include="game\GameRoom.cpp" />
     <ClCompile Include="game\msg_c2s_process.cpp" />
+    <ClCompile Include="game\msg_c2s_process_Game.cpp" />
     <ClCompile Include="game\Player.cpp" />
     <ClCompile Include="game\PokeCard.cpp" />
     <ClCompile Include="jsoncpp-master\src\lib_json\json_reader.cpp" />

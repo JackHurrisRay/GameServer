@@ -37,13 +37,18 @@ CProtocalFactory::Instance()->bind_func(ENUM_GAME_PROTOCAL::EGP_##X, &NET_CALLBA
 
 	BIND_CALLBACK(C2S_DISBAND_ROOM_BY_OWNER);
 	BIND_CALLBACK(C2S_REQUEST_ROOMLIST);
+
 	//////////////////////////////////////////////////////////////////////////
+	BIND_CALLBACK(C2S_READYGAME);
+	BIND_CALLBACK(C2S_CANCELREADY);
+
+	BIND_CALLBACK(C2S_FIGHT_ZHUANG);
 
 };
 
 const FACTORY_BEGIN  _FB;
 
-ENUM_PROTOCAL_ERROR CHECK_PLAYER_FIT(BASE_OBJECT* client)
+int CHECK_PLAYER_FIT(BASE_OBJECT* client)
 {	
 	ENUM_PROTOCAL_ERROR _status = PROTOCAL_ERROR_UNKNOW;
 
@@ -66,15 +71,6 @@ ENUM_PROTOCAL_ERROR CHECK_PLAYER_FIT(BASE_OBJECT* client)
 
 	return _status;
 }
-
-#define CHECK_MSG_PARAM(X) \
-if(!CHECK_PARAM<X>(data)){return false;}
-
-#define  CHECK_MSG_LOGIN(X) \
-if( CHECK_PLAYER_FIT(X) != PROTOCAL_OK ){return true;}
-
-#define  GET_PLAYER \
-BASE_PLAYER* player = Players::Instance()->get_player(client->_UID);
 
 /************************************************************************/
 /* Ð­Òé½âÎö                                                              */
@@ -160,21 +156,28 @@ NET_CALLBACK(C2S_LOGIN)
 
 		_msg._dataLArray[4]->setNumber(_player->_ROOMID);
 		_msg._dataLArray[5]->setNumber(0);
-		_msg._dataLArray[6]->setNumber(_player->_INDEX);
+		_msg._dataLArray[6]->setNumber(0);
+		_msg._dataLArray[7]->setNumber(0);
+		_msg._dataLArray[8]->setNumber(0);
+		_msg._dataLArray[9]->setNumber(0);
 
 		////
-		_msg._dataLArray[7]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
+		_msg._dataLArray[10]->setString(JackBase64::GAME_CONFIG::Instance()->_JSON_DATA_FOR_GAME.c_str());
 
 		////
 		BASE_ROOM* _room = GameRooms::Instance()->get_room(_player->_ROOMID);
 		if( _room != NULL )
 		{
 			_msg._dataLArray[5]->setNumber(_room->_ROOM_ID_RANDFLAG);
+			_msg._dataLArray[6]->setNumber(_player->_INDEX);
+			_msg._dataLArray[7]->setNumber(_room->_baseScore);
+			_msg._dataLArray[8]->setNumber(_room->_PLAYERS_STATUS);
+			_msg._dataLArray[9]->setNumber(_player->_status);
 
 			std::string _room_player_info;
 			if( _room->getPlayersInfo(_room_player_info) )
 			{
-				_msg._dataLArray[8]->setString(_room_player_info.c_str());
+				_msg._dataLArray[11]->setString(_room_player_info.c_str());
 			}
 		}
 
@@ -202,8 +205,10 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 	GET_PLAYER;
 
 	//////////////////////////////////////////////////////////////////////////
-	int _room_type = data[JSON_ROOM_TYPE].asInt();
-	if( _room_type > EGRT_NONE && _room_type < EGRT_COUNT )
+	const int _baseScore = data[JSON_BASESCORE].asInt();
+	const int _room_type = data[JSON_ROOM_TYPE].asInt();
+
+	if( _room_type > EGRT_NONE && _room_type < EGRT_COUNT && _baseScore > 0 && _baseScore <= 100 )
 	{
 
 	}
@@ -269,6 +274,10 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 		//////////////////////////////////////////////////////////////////////////
 		_room->_room_type = (ENUM_GAME_ROOM_TYPE)_room_type;
 		_room->_room_status = ERS_NOGAME;
+
+		//////////////////////////////////////////////////////////////////////////
+		_room->_baseScore      = _baseScore;
+		_room->_PLAYERS_STATUS = EPS_NONE; 
 
 		const int _MAX_AROUND_COUNT[] = {10, 20, 30};
 		_room->_MAX_ROUND = _MAX_AROUND_COUNT[_room_around_count];
@@ -337,14 +346,19 @@ NET_CALLBACK(C2S_ENTER_ROOM)
 		_msg._dataLArray[4]->setString(player->_NickName);
 		_msg._dataLArray[5]->setNumber(player->_INDEX);
 
+		_msg._dataLArray[8]->setNumber(player->_status);
+
 		//////////////////////////////////////////////////////////////////////////
 		_room->brodcast<MSG_S2C_ENTER_ROOM>(_msg, player);
 
 		//////////////////////////////////////////////////////////////////////////
+		_msg._dataLArray[6]->setNumber(_room->_baseScore);
+		_msg._dataLArray[7]->setNumber(_room->_PLAYERS_STATUS);
+
 		std::string _room_player_info;
 		if( _room->getPlayersInfo(_room_player_info) )
 		{
-			_msg._dataLArray[6]->setString(_room_player_info.c_str());
+			_msg._dataLArray[9]->setString(_room_player_info.c_str());
 		}
 
 		SEND_MSG<MSG_S2C_ENTER_ROOM>(_msg, client);
@@ -445,6 +459,7 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 	INTEGER_ARRAY _ROOM_ID_ARRAY;
 	INTEGER_ARRAY _ROOM_RAND_ID_ARRAY;
 	INTEGER_ARRAY _ROOM_PLAYERSCOUNT_ARRAY;
+	INTEGER_ARRAY _ROOM_BASESCORE;
 
 	//////////////////////////////////////////////////////////////////////////
 	for(ROOM_LIST::iterator cell = _room_list.begin(); cell != _room_list.end(); cell++ )
@@ -456,6 +471,7 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 			_ROOM_ID_ARRAY.push_back(_room->_ROOM_ID);
 			_ROOM_RAND_ID_ARRAY.push_back(_room->_ROOM_ID_RANDFLAG);
 			_ROOM_PLAYERSCOUNT_ARRAY.push_back(_room->getCurrentPlayersCount());
+			_ROOM_BASESCORE.push_back(_room->_baseScore);
 		}
 	}
 
@@ -464,6 +480,7 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 		_msg._dataLArray[0]->setIArray(_ROOM_ID_ARRAY);
 		_msg._dataLArray[1]->setIArray(_ROOM_RAND_ID_ARRAY);
 		_msg._dataLArray[2]->setIArray(_ROOM_PLAYERSCOUNT_ARRAY);
+		_msg._dataLArray[3]->setIArray(_ROOM_BASESCORE);
 	}
 
 	SEND_MSG<MSG_S2C_REQUEST_ROOMLIST>(_msg, client);

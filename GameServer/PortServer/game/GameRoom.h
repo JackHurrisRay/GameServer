@@ -12,6 +12,9 @@
 #include "game_common.h"
 
 //////////////////////////////////////////////////////////////////////////
+#include "GameDouNiu.h"
+
+//////////////////////////////////////////////////////////////////////////
 enum ENUM_ROOM_ERROR
 {
 	ERE_ROOM_OK                  = 0,
@@ -54,11 +57,12 @@ enum ENUM_GAME_ROOM_COUNT
 enum ENUM_ROOM_STATUS
 {
 	ERS_NONE = 0,
-	ERS_NOGAME,            //
-	ERS_INGAME,            //该状态下，房间不可解散加入或者离开
+	ERS_NOGAME,            //房间被创建的状态，但是没有开始游戏
+	ERS_INGAME,            //该状态下，房间不可解散加入或者离开，只能申请大家一致解散房间
 };
 
-struct BASE_ROOM
+struct BASE_ROOM:
+	public GAME_DOU_NIU
 {
 	//////////////////////////////////////////////////////////////////////////
 	char           _OWNER_KEY[MAX_KEY_COUNT];            //房间创建者的KEY ID
@@ -77,6 +81,7 @@ struct BASE_ROOM
 
 	//////////////////////////////////////////////////////////////////////////
 	unsigned char  _current_round;                       //当前局数
+	unsigned char  _baseScore;                           //基础分
 
 	time_t         _start_time;                          //房间创建时间
 	time_t         _agree_disband;                       //房间解散等待同意的时间
@@ -152,7 +157,7 @@ public:
 		return &_rooms;
 	}
 
-	BASE_ROOM* get_room(unsigned short room_id);
+	BASE_ROOM* get_room(short room_id);
 
 	//创建房间 0:成功创建房间 1:金币不足无法创建房间 2:条件不足无法创建房间 3:房间已满，无法创建房间       >0xFF:其他原因无法创建房间
 	ENUM_ROOM_ERROR createRoom(BASE_PLAYER* _player, BASE_ROOM*& _room);
