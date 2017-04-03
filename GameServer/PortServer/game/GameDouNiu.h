@@ -106,7 +106,7 @@ struct GAME_DOU_NIU
 	//////////////////////////////////////////////////////////////////////////
 	GAME_DOU_NIU();
 
-	static bool getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info);
+	static bool getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, int _limit);
 };
 
 #endif

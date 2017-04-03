@@ -312,7 +312,7 @@ ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::fightForZhuang(int _value)
 {
 	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
 
-	if( _value <= 0 )
+	if( _value <= 0 || _value > 255 )
 	{
 		return EGSE_DATA_ERROR;
 	}
@@ -321,7 +321,30 @@ ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::fightForZhuang(int _value)
 	{
 		_zhuang = _value;
 		_status = EPS_FIGHT_FOR_ZHUANG;
-		_hr = EGSE_OK;
+		_hr     = EGSE_OK;
+	}
+	else
+	{
+		_hr = EGSE_CURRENT_STATUS_ERROR;
+	}
+
+	return _hr;
+}
+
+ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::doubleScore(int _doubleValue)
+{
+	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
+
+	if( _doubleValue <= 0 || _doubleValue > 255 )
+	{
+		return EGSE_DATA_ERROR;
+	}
+
+	if( _status == EPS_FIGHT_FOR_ZHUANG )
+	{
+		_double = _doubleValue;
+		_status = EPS_DEALER;
+		_hr     = EGSE_OK;
 	}
 	else
 	{
@@ -340,8 +363,13 @@ GAME_DOU_NIU::GAME_DOU_NIU():
 
 }
 
-bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info)
+bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, int _limit)
 {
+	if( _limit >= MAX_CARD_PER_PLAYER )
+	{
+		return false;
+	}
+
 	bool _check = false;
 
 	Json::Value _root;
@@ -352,6 +380,7 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info)
 	if( _playerList.size() > 1 )
 	{
 		PLAYER_LIST::iterator cell;
+
 		for( cell = _playerList.begin(); cell != _playerList.end(); cell++ )
 		{
 			BASE_PLAYER* _player = *cell;
@@ -361,22 +390,20 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info)
 			_playerJsonData[JSON_PLAYER_UID] = _player->_PLAYER_ID;
 			_playerJsonData[JSON_PLAYER_KEY] = _player->_KEY;
 			_playerJsonData[JSON_ZHUANG]     = ( _room->_zhuangPlayer == _player )?1:0;
+			_playerJsonData[JSON_DOUBLE]     = _player->_double;
 
-			for( int i=0; i<MAX_CARD_PER_PLAYER; i++ )
+			for( int i=0; i<_limit; i++ )
 			{
 				_playerJsonData[JSON_POKECARD].append( _player->_card[i]->_guid );
 			}
 
-			_root.append(_playerJsonData);
-
-			_check = true;
+			_root[JSON_PLAYER].append(_playerJsonData);
 		}
 
-		if( _check )
-		{
-			Json::FastWriter _writer;
-			_info = _writer.write(_root);
-		}
+		_root[JSON_ZHUANG_VALUE] = _room->_zhuangPlayer->_zhuang;
+
+		Json::FastWriter _writer;
+		_info = _writer.write(_root);
 
 		_check = true;
 	}

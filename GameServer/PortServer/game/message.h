@@ -7,7 +7,11 @@
 #define JSON_TIME                        "time"
 #define JSON_FLAG                        "flag"
 #define JSON_ZHUANG                      "zhuang"
+#define JSON_ZHUANG_VALUE                "zhuang_value"
+#define JSON_DOUBLE                      "double"
 #define JSON_POKECARD                    "pokecard"
+
+#define JSON_PLAYER                      "player"
 
 #define JSON_PLAYER_KEY                  "player_key"
 #define JSON_PLAYER_NICKNAME             "player_nickname"
