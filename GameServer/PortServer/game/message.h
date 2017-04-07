@@ -11,6 +11,10 @@
 #define JSON_DOUBLE                      "double"
 #define JSON_POKECARD                    "pokecard"
 
+#define JSON_BASEDOUBLE                  "basedouble"
+#define JSON_ZHUANGDOUBLE                "zhuangdouble"
+
+//////////////////////////////////////////////////////////////////////////
 #define JSON_PLAYER                      "player"
 
 #define JSON_PLAYER_KEY                  "player_key"
@@ -20,13 +24,17 @@
 #define JSON_PLAYER_DIAMOND              "player_diamond"
 #define JSON_PLAYER_GOLD                 JSON_PLAYER_DIAMOND
 
+#define JSON_PLAYER_ZHUANG               "player_zhuang"
 #define JSON_PLAYER_SCORE                "player_score"
+#define JSON_POKECARD_WINTYPE            "pokecard_wintype"
+
 #define JSON_PLAYER_INDEXINROOM          "player_index_in_room"
 #define JSON_PLAYER_GAMESTATUS           "player_game_status"
 
 #define JSON_IMG_DATA                    "img_data"
 #define JSON_PASSWORD                    "password"
 #define JSON_BASESCORE                   "basescore"
+#define JSON_TOTALSCORE                  "totalscore"
 
 #define JSON_ROOM_ID                     "room_id"
 #define JSON_ROOM_RANDKEY                "room_rand_key"
@@ -76,11 +84,11 @@ struct MSG_S2C_LOGIN:
 {
 	MSG_S2C_LOGIN():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_LOGIN)
 	{
-		initializeParam(12, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, 
+		initializeParam(13, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, 
 			JSON_PLAYER_KEY, JSON_PLAYER_NICKNAME, 
 			JSON_ROOM_ID, JSON_ROOM_RANDKEY, JSON_PLAYER_INDEXINROOM, JSON_BASESCORE,
 			JSON_ROOM_GAMESTATUS, JSON_PLAYER_GAMESTATUS,
-			JSON_EX_DATA, JSON_ROOM_PLAYERSINFO_DATA);
+			JSON_EX_DATA, JSON_ROOM_PLAYERSINFO_DATA, JSON_POKECARD);
 	}
 };
 

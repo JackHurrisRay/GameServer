@@ -22,6 +22,7 @@ protected:
 	LP_BASE_POKE_CARD m_card[MAX_CARD_COUNT];
 
 	POKE_LIST         m_cardPool;              //Î´´ò³öµÄÅÆ
+	LP_BASE_POKE_CARD m_currentCard[MAX_CARD_COUNT];
 
 public:
 	CPokeCard(void);
@@ -29,7 +30,7 @@ public:
 
 	void Shuffle_cards();                      //Ï´ÅÆ	
 
-	const LP_BASE_POKE_CARD* get_card_array(){return m_card;};
+	const LP_BASE_POKE_CARD* get_card_array(){return m_currentCard;};
 };
 
 typedef MemAllocPool<CPokeCard> ALLOC_POKECARD;

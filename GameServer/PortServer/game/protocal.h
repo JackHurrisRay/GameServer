@@ -74,7 +74,7 @@ enum ENUM_GAME_PROTOCAL
 	EGP_C2S_FIGHT_ZHUANG           = EGP_START__GAME + 14,           //ÇÀ×¯
 	EGP_S2C_ALL_FIGHT_ZHUANG       = EGP_START__GAME + 15,
 
-	EGP_C2S_ADD_DOUBLE             = EGP_START__GAME + 16,           //Ñº·Ö
+	EGP_C2S_ADD_DOUBLE             = EGP_START__GAME + 16,           //Ñº·Ö¼Ó±¶
 	EGP_S2C_ALL_ADD_DOUBLE         = EGP_START__GAME + 17,
 
 	/*

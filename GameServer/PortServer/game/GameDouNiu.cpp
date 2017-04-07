@@ -4,6 +4,7 @@
 #include "json/json.h"
 
 #include "./../game/message.h"
+#include "./../core/JackBase64.h"
 
 //////////////////////////////////////////////////////////////////////////
 ALLOC_POKECARD GAME_DOU_NIU::_ALLOC_POKECARD(MAX_ROOM_LIMIT, "ALLOC POKECARD");
@@ -29,6 +30,24 @@ BASE_POKE_CARD* get_card_of_max_value(BASE_POKE_CARD** _cardArray, int _count = 
 	}
 
 	return _card;
+}
+
+//炸弹五小牛
+extern bool check_zhadan(BASE_POKE_CARD** _cardArray, BASE_POKE_CARD*& _flagCard);
+extern bool check_wuxiaoniu(BASE_POKE_CARD** _cardArray, BASE_POKE_CARD*& _flagCard);
+bool check_zhadanwuxiao(BASE_POKE_CARD** _cardArray, BASE_POKE_CARD*& _flagCard)
+{
+	bool check = false;
+
+	BASE_POKE_CARD* _card[2];
+
+	if( check_zhadan(_cardArray, _card[0]) && check_wuxiaoniu(_cardArray, _card[1]) )
+	{
+		_flagCard = _card[0];
+		check = true;
+	}
+
+	return check;
 }
 
 //五小牛
@@ -207,10 +226,13 @@ typedef bool FUNC_CHECK_NIU(BASE_POKE_CARD** _cardArray, BASE_POKE_CARD*& _flagC
 //////////////////////////////////////////////////////////////////////////
 void GAME_PLAYER_DATA::resetData()
 {
-	_status = EPS_NONE;
-	_SCORE  = 0;
+	_status  = EPS_NONE;
+	_winType = EWCT_NONE;
+	_winCard = NULL;
+	_currentScore  = 0;
 	_zhuang = 0;
 	_double = 0;
+	_isZhuang = false;
 	
 	memset(_card, 0, sizeof(BASE_POKE_CARD) * MAX_CARD_PER_PLAYER);
 }
@@ -221,6 +243,7 @@ ENUM_WIN_CARD_TYPE GAME_PLAYER_DATA::process_WinCard(BASE_POKE_CARD*& _flagCard)
 
 	FUNC_CHECK_NIU* _func[] =
 	{
+		&check_zhadanwuxiao,
 		&check_zhadan,
 		&check_wuxiaoniu,
 		&check_wuhuaniu,
@@ -229,6 +252,7 @@ ENUM_WIN_CARD_TYPE GAME_PLAYER_DATA::process_WinCard(BASE_POKE_CARD*& _flagCard)
 
 	const int _FIRST_WIN_TYPE[] =
 	{
+		EWCT_ZHANDANWUXIAO,
 		EWCT_ZHADAN,
 		EWCT_WUXIAONIU,
 		EWCT_WUHUANIU,
@@ -273,6 +297,26 @@ ENUM_WIN_CARD_TYPE GAME_PLAYER_DATA::process_WinCard(BASE_POKE_CARD*& _flagCard)
 /************************************************************************/
 /*                                                                      */
 /************************************************************************/
+void GAME_PLAYER_DATA::checkWinCard()
+{
+	_winType = process_WinCard(_winCard);
+}
+
+void GAME_PLAYER_DATA::getPokeCard(INTEGER_ARRAY& _pokecard_data)
+{
+	_pokecard_data.clear();
+
+	for( int i=0; i<MAX_CARD_PER_PLAYER; i++ )
+	{
+		BASE_POKE_CARD* _pCard = _card[i];
+
+		if( _pCard != NULL )
+		{
+			_pokecard_data.push_back(_pCard->_guid);
+		}
+	}
+}
+
 ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::readyGame()
 {
 	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
@@ -389,7 +433,7 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, i
 
 			_playerJsonData[JSON_PLAYER_UID] = _player->_PLAYER_ID;
 			_playerJsonData[JSON_PLAYER_KEY] = _player->_KEY;
-			_playerJsonData[JSON_ZHUANG]     = ( _room->_zhuangPlayer == _player )?1:0;
+			_playerJsonData[JSON_ZHUANG]     = _player->_isZhuang?1:0;
 			_playerJsonData[JSON_DOUBLE]     = _player->_double;
 
 			for( int i=0; i<_limit; i++ )
@@ -401,6 +445,7 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, i
 		}
 
 		_root[JSON_ZHUANG_VALUE] = _room->_zhuangPlayer->_zhuang;
+		_root[JSON_PLAYER_UID]   = _room->_zhuangPlayer->_PLAYER_ID;
 
 		Json::FastWriter _writer;
 		_info = _writer.write(_root);
@@ -409,4 +454,174 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, i
 	}
 
 	return _check;
+}
+
+int GAME_DOU_NIU::getWinTypeScore(BASE_PLAYER* _player)
+{
+	int _value = 0;
+	const int _winTypeIndex = _player->_winType;
+	_value = JackBase64::GAME_CONFIG::Instance()->_SCORE_FOR_WINTYPE[_winTypeIndex];
+	return _value;
+}
+
+bool compareWinPlayer( const BASE_PLAYER* player1, const BASE_PLAYER* player2 )
+{
+	if( player1->_winType > player2->_winType )
+	{
+		return true;
+	}
+	else if( player1->_winType == player2->_winType && player1->_winType != EWCT_NONE )
+	{
+		BASE_POKE_CARD* _card[2] = 
+			{
+				player1->_winCard,
+				player2->_winCard
+		    };
+
+		if( _card[0]->_value > _card[1]->_value )
+		{
+			return true;
+		}
+		else if( _card[0]->_value == _card[1]->_value )
+		{
+			return _card[0]->_suit < _card[1]->_suit;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if( player1->_winType == EWCT_NONE && player2->_winType == EWCT_NONE )
+	{
+		return player1->_isZhuang > player2->_isZhuang;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+void GAME_DOU_NIU::computerPlayerScore(BASE_ROOM* room, std::string& _info)
+{
+	//////////////////////////////////////////////////////////////////////////
+	PLAYER_LIST _playerList;
+	room->getPlayersInRoom(_playerList);
+
+	BASE_PLAYER* _zhuangPlayer = room->_zhuangPlayer;
+
+	//////////////////////////////////////////////////////////////////////////
+	//排序
+	_playerList.sort(compareWinPlayer);
+
+	const int _baseScore  = room->_baseScore;                               //底分
+	const int _baseDouble = room->_zhuangValue;                             //初始倍数
+	const int  _zhuangDouble = _zhuangPlayer->_double;                      //庄倍数
+
+	//////////////////////////////////////////////////////////////////////////
+	std::vector<BASE_PLAYER*> PLAYER_ARRAY;
+	int _arrayIndex      = 0;
+	int _zhuangIndexTemp = -1;
+
+	for( PLAYER_LIST::iterator cell = _playerList.begin(); cell != _playerList.end(); cell++ )
+	{
+		//////////////////////////////////////////////////////////////////////////
+		BASE_PLAYER* _player = *cell;
+
+		PLAYER_ARRAY.push_back(_player);
+		if( _player == _zhuangPlayer )
+		{
+			_zhuangIndexTemp = _arrayIndex;
+		}
+
+		_arrayIndex += 1;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	const int _playerCount = PLAYER_ARRAY.size();
+	const int _zhuangIndex = _zhuangIndexTemp;
+
+	
+	//////////////////////////////////////////////////////////////////////////
+	//算出庄赢的分数
+	int    _zhuangWinScore = 0;
+
+	{
+		BASE_PLAYER* _player   = _zhuangPlayer;
+
+		const int _totalDouble = _zhuangDouble + _baseDouble + GAME_DOU_NIU::getWinTypeScore(_player);
+		_zhuangWinScore        = _baseScore * _totalDouble;
+	}
+
+	long long _zhuangCurrentScore = 0;
+	for( int i=0; i<_playerCount; i++ )
+	{
+		BASE_PLAYER* _player = PLAYER_ARRAY[i];
+
+		if( i < _zhuangIndex )
+		{
+			//赢庄
+			const int _totalDouble = _player->_double + _baseDouble + GAME_DOU_NIU::getWinTypeScore(_player) + _zhuangDouble;
+			_player->_currentScore = _baseScore * _totalDouble;
+
+			////
+			_zhuangCurrentScore -= _player->_currentScore;
+		}
+		else if( i > _zhuangIndex )
+		{
+			//输庄
+			_player->_currentScore = -_zhuangWinScore * _player->_double;
+
+			////
+			_zhuangCurrentScore -= _player->_currentScore;
+		}
+	}
+
+	_zhuangPlayer->_currentScore = _zhuangCurrentScore;
+
+	//////////////////////////////////////////////////////////////////////////
+	Json::Value _root;
+	Json::Value _zhuangInfo;
+
+	//////////////////////////////////////////////////////////////////////////
+	_zhuangInfo[JSON_PLAYER_UID]       = _zhuangPlayer->_PLAYER_ID;
+	_zhuangInfo[JSON_PLAYER_KEY]       = _zhuangPlayer->_KEY;
+	_zhuangInfo[JSON_BASESCORE]        = _baseScore;
+	_zhuangInfo[JSON_BASEDOUBLE]       = _baseDouble;
+	_zhuangInfo[JSON_PLAYER_SCORE]     = _zhuangPlayer->_currentScore;
+	_zhuangInfo[JSON_POKECARD_WINTYPE] = _zhuangPlayer->_winType;
+
+	_root[JSON_PLAYER_ZHUANG]          = _zhuangInfo;
+
+	//////////////////////////////////////////////////////////////////////////
+	for( int i=0; i<_playerCount; i++ )
+	{
+		BASE_PLAYER* _player = PLAYER_ARRAY[i];
+		Json::Value _playerInfo;
+
+		_playerInfo[JSON_PLAYER_UID] = _player->_PLAYER_ID;
+		_playerInfo[JSON_PLAYER_KEY] = _player->_KEY;
+
+		_playerInfo[JSON_DOUBLE]     = _player->_double;
+
+		_playerInfo[JSON_PLAYER_SCORE]     = _player->_currentScore;
+		_playerInfo[JSON_POKECARD_WINTYPE] = _player->_winType;
+
+		for( int i=0; i<MAX_CARD_PER_PLAYER; i++ )
+		{
+			BASE_POKE_CARD* _card = _player->_card[i];
+
+			if( _card )
+			{
+				_playerInfo[JSON_POKECARD].append(_card->_guid);
+			}
+		}
+
+		_root[JSON_PLAYER].append(_playerInfo);
+	}
+
+	Json::FastWriter _writer;
+	_info = _writer.write(_root);
+
+
 }

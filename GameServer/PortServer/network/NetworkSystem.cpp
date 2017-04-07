@@ -177,7 +177,10 @@ void NetworkSystem::listen_connected()
 
 void NetworkSystem::closeClientSocket( PPER_HANDLE_DATA& pPerHandle, PPER_IO_DATA& pPerIo )
 {
-	ClientObjectSystem::Instance()->delBaseObject(pPerHandle->s);
+	if( pPerHandle != NULL )
+	{
+		ClientObjectSystem::Instance()->delBaseObject(pPerHandle->s);
+	}
 }
 
 void NetworkSystem::sendMSG( PPER_HANDLE_DATA pPerHandle, PPER_IO_DATA pPerIo, size_t _buffsize, ENUM_OP_TYPE _type )

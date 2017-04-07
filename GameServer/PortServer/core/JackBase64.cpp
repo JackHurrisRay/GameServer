@@ -70,6 +70,34 @@ namespace JackBase64
 
 		_JSON_DATA_FOR_GAME = output;
 
+		//////////////////////////////////////////////////////////////////////////
+		const char* _WIN_TYPE_NAME[] =
+		{
+			"ZHADANWUXIAONIU",
+			"ZHADANNIU",
+			"WUXIAONIU",
+			"WUHUANIU",
+			"SIHUANIU",
+			"NIUNIU",
+			"NIU9",
+			"NIU8",
+			"NIU7",
+			"NIU6",
+			"NIU5",
+			"NIU4",
+			"NIU3",
+			"NIU2",
+			"NIU1",
+			"NONE"
+		};
+
+		for( int i=1; i<=EWCT_COUNT; i++ )
+		{
+			_SCORE_FOR_WINTYPE[EWCT_COUNT - i] = 
+				GetPrivateProfileIntA("SCORE",_WIN_TYPE_NAME[i-1],0,_configFilePath);
+		}
+
+		return;
 	}
 
 

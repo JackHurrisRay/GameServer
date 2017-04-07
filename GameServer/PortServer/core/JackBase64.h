@@ -2,6 +2,7 @@
 #define _JACKBASE64_H
 
 #include <string>  
+#include "./../game/GameDouNiu.h"
 
 namespace JackBase64
 {
@@ -18,6 +19,8 @@ namespace JackBase64
 		int         _GAME_MAX_AROUND[3];
 		int         _GAME_MAX_AROUND_GOLD[3];
 		int         _GAME_VIP_GOLD[3];
+
+		int         _SCORE_FOR_WINTYPE[EWCT_COUNT];
 
 		//////////////////////////////////////////////////////////////////////////
 		static GAME_CONFIG* Instance()

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <list>
 #include <WinSock2.h>
-#define BUFFER_SIZE 1024 * 2 + 32
+#define BUFFER_SIZE 1024 * 4 + 32
 #define BUFFER_BIG_SIZE 1024 * 32
 
 struct Locker

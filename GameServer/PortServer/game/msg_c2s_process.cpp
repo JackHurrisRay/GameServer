@@ -156,6 +156,7 @@ NET_CALLBACK(C2S_LOGIN)
 		_msg._dataLArray[3]->setString(_player->_NickName);
 
 		_msg._dataLArray[4]->setNumber(_player->_ROOMID);
+
 		_msg._dataLArray[5]->setNumber(0);
 		_msg._dataLArray[6]->setNumber(0);
 		_msg._dataLArray[7]->setNumber(0);
@@ -180,6 +181,14 @@ NET_CALLBACK(C2S_LOGIN)
 			{
 				_msg._dataLArray[11]->setString(_room_player_info.c_str());
 			}
+
+			INTEGER_ARRAY _card_data;
+			_player->getPokeCard(_card_data);
+			if( _card_data.size() > 0 )
+			{
+				_msg._dataLArray[12]->setIArray(_card_data);
+			}
+
 		}
 
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);
@@ -273,14 +282,15 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 		}
 
 		//////////////////////////////////////////////////////////////////////////
-		_room->_room_type = (ENUM_GAME_ROOM_TYPE)_room_type;
-		_room->_room_status = ERS_NOGAME;
+		_room->_room_type    = (ENUM_GAME_ROOM_TYPE)_room_type;
+		_room->_room_status  = ERS_NOGAME;
+		_room->_currentRound = 0;
 
 		//////////////////////////////////////////////////////////////////////////
 		_room->_baseScore      = _baseScore;
 		_room->_PLAYERS_STATUS = EPS_NONE; 
 
-		const int _MAX_AROUND_COUNT[] = {10, 20, 30};
+		const int* _MAX_AROUND_COUNT = JackBase64::GAME_CONFIG::Instance()->_GAME_MAX_AROUND;
 		_room->_MAX_ROUND = _MAX_AROUND_COUNT[_room_around_count];
 
 		//////////////////////////////////////////////////////////////////////////

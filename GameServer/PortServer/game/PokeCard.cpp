@@ -61,4 +61,11 @@ void CPokeCard::Shuffle_cards()
 		}
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	int _index = 0;
+	POKE_LIST::iterator cell;
+	for( cell = m_cardPool.begin(); cell != m_cardPool.end(); cell++ )
+	{
+		m_currentCard[_index++] = *cell;
+	}
 }

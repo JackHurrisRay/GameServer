@@ -4,6 +4,7 @@
 /************************************************************************/
 /* 该模块逻辑为具体游戏模块逻辑，可以分离                                  */
 /************************************************************************/
+#include "./../core/ProtocalFactory.h"
 #include "PokeCard.h"
 
 struct BASE_PLAYER;
@@ -23,7 +24,7 @@ enum ENUM_PLAYER_STATUS
 	EPS_READY,                                                              //玩家准备好了，等待全体到达这个状态， 游戏自动开始然后可以开始抢庄
 	EPS_FIGHT_FOR_ZHUANG,                                                   //玩家抢完庄，等待全体到达这个状态, 然后可以开始发牌
 	EPS_DEALER,                                                             //发完牌了，玩家可以加倍
-	EPS_RESULT,                                                             //加倍完了，则玩家等待游戏结果，游戏结果发还以后，状态重置为EPS_NONE
+	//EPS_RESULT,                                                             //加倍完了，则玩家等待游戏结果，游戏结果发还以后，状态重置为EPS_NONE
 
 	EPS_MAX,                                                                //标识符，没有任何意义
 };
@@ -49,7 +50,9 @@ enum ENUM_WIN_CARD_TYPE
 	EWCT_WUHUANIU,
 	EWCT_WUXIAONIU,
 	EWCT_ZHADAN,
+	EWCT_ZHANDANWUXIAO,
 
+	EWCT_COUNT,
 };
 
 //游戏过程中错误
@@ -68,11 +71,16 @@ struct GAME_PLAYER_DATA
 {
 	ENUM_PLAYER_STATUS  _status;
 
-	long long           _SCORE;                                             //玩家分数
+	long long           _currentScore;                                      //当前局分数
+	long long           _totalSCORE;                                        //玩家分数
 
 	unsigned char       _zhuang;                                            //庄的值
 	unsigned char       _double;                                            //翻倍
 
+	bool                _isZhuang;
+
+	ENUM_WIN_CARD_TYPE  _winType;
+	BASE_POKE_CARD*     _winCard;
 	BASE_POKE_CARD*     _card[MAX_CARD_PER_PLAYER];                         //手牌
 
 	//////////////////////////////////////////////////////////////////////////
@@ -85,6 +93,10 @@ struct GAME_PLAYER_DATA
 	ENUM_GAME_STATUS_ERROR fightForZhuang(int _value);
 	ENUM_GAME_STATUS_ERROR doubleScore(int _double);
 
+	void checkWinCard();
+
+	//////////////////////////////////////////////////////////////////////////
+	void getPokeCard(INTEGER_ARRAY& _pokecard_data);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -99,6 +111,7 @@ struct GAME_DOU_NIU
 	CPokeCard*       _PokeCard;                                             //需要有一副牌
 	BASE_PLAYER*     _zhuangPlayer;
 	unsigned char    _zhuangValue;                                          //庄
+	unsigned char    _currentRound;                                         //当前局数
 
 	//////////////////////////////////////////////////////////////////////////
 	std::string      _INFO_playersPokeCard;
@@ -107,6 +120,8 @@ struct GAME_DOU_NIU
 	GAME_DOU_NIU();
 
 	static bool getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, int _limit);
+	static void computerPlayerScore(BASE_ROOM* _room, std::string& _info);
+	static int  getWinTypeScore(BASE_PLAYER* _player);
 };
 
 #endif
