@@ -579,19 +579,26 @@ void GAME_DOU_NIU::computerPlayerScore(BASE_ROOM* room, std::string& _info)
 
 	_zhuangPlayer->_currentScore = _zhuangCurrentScore;
 
+	for( int i=0; i<_playerCount; i++ )
+	{
+		BASE_PLAYER* _player = PLAYER_ARRAY[i];
+		_player->_totalSCORE += _player->_currentScore;
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	Json::Value _root;
 	Json::Value _zhuangInfo;
 
 	//////////////////////////////////////////////////////////////////////////
-	_zhuangInfo[JSON_PLAYER_UID]       = _zhuangPlayer->_PLAYER_ID;
-	_zhuangInfo[JSON_PLAYER_KEY]       = _zhuangPlayer->_KEY;
-	_zhuangInfo[JSON_BASESCORE]        = _baseScore;
-	_zhuangInfo[JSON_BASEDOUBLE]       = _baseDouble;
-	_zhuangInfo[JSON_PLAYER_SCORE]     = _zhuangPlayer->_currentScore;
-	_zhuangInfo[JSON_POKECARD_WINTYPE] = _zhuangPlayer->_winType;
+	_zhuangInfo[JSON_PLAYER_UID]              = _zhuangPlayer->_PLAYER_ID;
+	_zhuangInfo[JSON_PLAYER_KEY]              = _zhuangPlayer->_KEY;
+	_zhuangInfo[JSON_BASESCORE]               = _baseScore;
+	_zhuangInfo[JSON_BASEDOUBLE]              = _baseDouble;
+	_zhuangInfo[JSON_PLAYER_CURRENTSCORE]     = _zhuangPlayer->_currentScore;
+	_zhuangInfo[JSON_PLAYER_TOTALSCORE]       = _zhuangPlayer->_totalSCORE;
+	_zhuangInfo[JSON_POKECARD_WINTYPE]        = _zhuangPlayer->_winType;
 
-	_root[JSON_PLAYER_ZHUANG]          = _zhuangInfo;
+	_root[JSON_PLAYER_ZHUANG]                 = _zhuangInfo;
 
 	//////////////////////////////////////////////////////////////////////////
 	for( int i=0; i<_playerCount; i++ )
@@ -604,8 +611,9 @@ void GAME_DOU_NIU::computerPlayerScore(BASE_ROOM* room, std::string& _info)
 
 		_playerInfo[JSON_DOUBLE]     = _player->_double;
 
-		_playerInfo[JSON_PLAYER_SCORE]     = _player->_currentScore;
-		_playerInfo[JSON_POKECARD_WINTYPE] = _player->_winType;
+		_playerInfo[JSON_PLAYER_CURRENTSCORE]     = _player->_currentScore;
+		_playerInfo[JSON_PLAYER_TOTALSCORE]       = _player->_totalSCORE;
+		_playerInfo[JSON_POKECARD_WINTYPE]        = _player->_winType;
 
 		for( int i=0; i<MAX_CARD_PER_PLAYER; i++ )
 		{

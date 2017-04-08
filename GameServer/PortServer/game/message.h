@@ -25,7 +25,8 @@
 #define JSON_PLAYER_GOLD                 JSON_PLAYER_DIAMOND
 
 #define JSON_PLAYER_ZHUANG               "player_zhuang"
-#define JSON_PLAYER_SCORE                "player_score"
+#define JSON_PLAYER_CURRENTSCORE         "current_score"
+#define JSON_PLAYER_TOTALSCORE           "total_score"
 #define JSON_POKECARD_WINTYPE            "pokecard_wintype"
 
 #define JSON_PLAYER_INDEXINROOM          "player_index_in_room"

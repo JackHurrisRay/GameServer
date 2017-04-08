@@ -281,6 +281,7 @@ bool BASE_ROOM::getPlayersInfo(std::string& _info)
 			_playerData[JSON_PLAYER_INDEXINROOM] = _player->_INDEX;
 			_playerData[JSON_PLAYER_GAMESTATUS]  = _player->_status;
 			_playerData[JSON_ZHUANG]             = _player->_isZhuang;
+			_playerData[JSON_PLAYER_TOTALSCORE]  = _player->_totalSCORE;
 
 			_root[JSON_PLAYER].append(_playerData);
 		}
