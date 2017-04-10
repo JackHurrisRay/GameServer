@@ -230,8 +230,8 @@ void GAME_PLAYER_DATA::resetData()
 	_winType = EWCT_NONE;
 	_winCard = NULL;
 	_currentScore  = 0;
-	_zhuang = 0;
-	_double = 0;
+	_zhuang = -1;
+	_double = -1;
 	_isZhuang = false;
 	
 	memset(_card, 0, sizeof(BASE_POKE_CARD) * MAX_CARD_PER_PLAYER);

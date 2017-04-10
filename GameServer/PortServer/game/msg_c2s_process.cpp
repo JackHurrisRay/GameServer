@@ -181,14 +181,6 @@ NET_CALLBACK(C2S_LOGIN)
 			{
 				_msg._dataLArray[11]->setString(_room_player_info.c_str());
 			}
-
-			INTEGER_ARRAY _card_data;
-			_player->getPokeCard(_card_data);
-			if( _card_data.size() > 0 )
-			{
-				_msg._dataLArray[12]->setIArray(_card_data);
-			}
-
 		}
 
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);

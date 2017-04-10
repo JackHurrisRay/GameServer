@@ -273,16 +273,36 @@ bool BASE_ROOM::getPlayersInfo(std::string& _info)
 		BASE_PLAYER* _player = _Players[i];
 		if( _player != NULL )
 		{
+			//////////////////////////////////////////////////////////////////////////
 			Json::Value _playerData;
 
+			//////////////////////////////////////////////////////////////////////////
 			_playerData[JSON_PLAYER_UID] = _player->_PLAYER_ID;
 			_playerData[JSON_PLAYER_KEY] = _player->_KEY;
 			_playerData[JSON_PLAYER_NICKNAME] = _player->_NickName;
 			_playerData[JSON_PLAYER_INDEXINROOM] = _player->_INDEX;
 			_playerData[JSON_PLAYER_GAMESTATUS]  = _player->_status;
 			_playerData[JSON_ZHUANG]             = _player->_isZhuang;
+			_playerData[JSON_ZHUANG_VALUE]       = _player->_zhuang;
+			_playerData[JSON_DOUBLE]             = _player->_double;
 			_playerData[JSON_PLAYER_TOTALSCORE]  = _player->_totalSCORE;
+			_playerData[JSON_PLAYER_CURRENTSCORE]= _player->_currentScore;
+			_playerData[JSON_POKECARD_WINTYPE]   = _player->_winType;
 
+			//////////////////////////////////////////////////////////////////////////
+			INTEGER_ARRAY _card_data;
+			_player->getPokeCard(_card_data);
+			if( _card_data.size() > 0 )
+			{
+				INTEGER_ARRAY::iterator cell;
+
+				for( cell = _card_data.begin(); cell != _card_data.end(); cell++ )
+				{
+					_playerData[JSON_POKECARD].append(*cell);
+				}
+			}
+ 
+			//////////////////////////////////////////////////////////////////////////
 			_root[JSON_PLAYER].append(_playerData);
 		}
 

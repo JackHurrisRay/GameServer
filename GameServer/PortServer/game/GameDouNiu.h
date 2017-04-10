@@ -74,8 +74,8 @@ struct GAME_PLAYER_DATA
 	long long           _currentScore;                                      //当前局分数
 	long long           _totalSCORE;                                        //玩家分数
 
-	unsigned char       _zhuang;                                            //庄的值
-	unsigned char       _double;                                            //翻倍
+	char                _zhuang;                                            //庄的值
+	char                _double;                                            //翻倍
 
 	bool                _isZhuang;
 

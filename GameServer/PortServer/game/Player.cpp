@@ -25,8 +25,9 @@ void BASE_PLAYER::initData()
 
 	//////////////////////////////////////////////////////////////////////////
 	_status = EPS_NONE;
-	_zhuang = 0;
-	_double = 1;
+	_isZhuang = false;
+	_zhuang = -1;
+	_double = -1;
 
 	resetData();
 }
