@@ -38,6 +38,7 @@ void CPokeCard::Shuffle_cards()
 		_pokeList.push_back(m_card[i]);
 	}
 
+	m_cardPool.clear();
 	while ( _pokeList.size() > 0 )
 	{
 		const int _current_size   = _pokeList.size();

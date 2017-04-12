@@ -42,6 +42,7 @@
 #define JSON_ROOM_TYPE                   "room_type"
 #define JSON_ROOM_STATUS                 "room_status"
 #define JSON_ROOM_PLAYERCOUNT            "room_player_count"
+#define JSON_ROOM_CURRENT_AROUND         "room_current_around"
 #define JSON_ROOM_MAX_AROUND             "room_max_around"
 #define JSON_ROOM_PLAYERSINFO_DATA       "room_players_info"
 #define JSON_ROOM_GAMESTATUS             "room_game_status"

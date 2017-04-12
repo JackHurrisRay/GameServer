@@ -115,7 +115,6 @@ void BASE_ROOM::initData()
 	_ROOM_ID       = 0;
 	_MAX_ROUND     = 0;
 	_BANKER_TYPE   = 0;
-	_current_round = 0;
 	_start_time    = time(NULL);
 
 	_room_type     = EGRT_NONE;
@@ -312,6 +311,9 @@ bool BASE_ROOM::getPlayersInfo(std::string& _info)
 	if( _check && _zhuangPlayer != NULL )
 	{
 		_root[JSON_ZHUANG_VALUE] = _zhuangValue;
+
+		_root[JSON_ROOM_CURRENT_AROUND] = _currentRound;
+		_root[JSON_ROOM_MAX_AROUND]     = _MAX_ROUND;
 	}
 
 	if( _check )
@@ -655,3 +657,34 @@ void GameRooms::getRoomsByOwner(const unsigned short _player_id, ROOM_LIST& _roo
 	}
 }
 
+void GameRooms::disbandRoomAfterGameOver(short _room_id)
+{
+	BASE_ROOM* _room = get_room(_room_id);
+
+	if( _room != NULL )
+	{
+		PLAYER_LIST _player_list;
+		_room->getPlayersInRoom(_player_list);
+
+		for( PLAYER_LIST::iterator cell = _player_list.begin(); cell != _player_list.end(); cell++ )
+		{
+			BASE_PLAYER* _player = *cell;
+
+			_player->resetData();
+			_player->_ROOMID = -1;
+			_player->_INDEX  = -1;
+		}
+
+		for( int i=0; i<MAX_PLAYER_IN_ROOM; i++ )
+		{
+			_room->_Players[i] = NULL;
+		}
+
+		//////////////////////////////////////////////////////////////////////////
+		BASE_ROOM*& _room = m_rooms[_room_id];
+		BASE_ROOM* _delRoom = _room;
+		_room   = NULL;
+
+		_ALLOC_ROOM.releaseData(_delRoom);
+	}
+}

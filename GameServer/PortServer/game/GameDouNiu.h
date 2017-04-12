@@ -24,9 +24,17 @@ enum ENUM_PLAYER_STATUS
 	EPS_READY,                                                              //玩家准备好了，等待全体到达这个状态， 游戏自动开始然后可以开始抢庄
 	EPS_FIGHT_FOR_ZHUANG,                                                   //玩家抢完庄，等待全体到达这个状态, 然后可以开始发牌
 	EPS_DEALER,                                                             //发完牌了，玩家可以加倍
-	//EPS_RESULT,                                                             //加倍完了，则玩家等待游戏结果，游戏结果发还以后，状态重置为EPS_NONE
+	EPS_END,                                                                //加倍完了，则玩家等待游戏结果，游戏结果发还以后，状态重置为EPS_NONE
 
 	EPS_MAX,                                                                //标识符，没有任何意义
+};
+
+enum ENUM_LEAVE_STATUS
+{
+	ELS_NONE = 0,
+	ELS_APPLICATE,                                                          //申请状态
+	ELS_AGREE,                                                              //同意状态
+	ELS_REFUSE,                                                             //拒绝状态
 };
 
 //牌型种类
@@ -70,7 +78,9 @@ enum ENUM_GAME_STATUS_ERROR
 struct GAME_PLAYER_DATA
 {
 	ENUM_PLAYER_STATUS  _status;
+	ENUM_LEAVE_STATUS   _leaveStatus;
 
+	//////////////////////////////////////////////////////////////////////////
 	long long           _currentScore;                                      //当前局分数
 	long long           _totalSCORE;                                        //玩家分数
 
@@ -92,6 +102,7 @@ struct GAME_PLAYER_DATA
 	ENUM_GAME_STATUS_ERROR cancelReady();
 	ENUM_GAME_STATUS_ERROR fightForZhuang(int _value);
 	ENUM_GAME_STATUS_ERROR doubleScore(int _double);
+	ENUM_GAME_STATUS_ERROR endThisAround();
 
 	void checkWinCard();
 

@@ -226,9 +226,10 @@ typedef bool FUNC_CHECK_NIU(BASE_POKE_CARD** _cardArray, BASE_POKE_CARD*& _flagC
 //////////////////////////////////////////////////////////////////////////
 void GAME_PLAYER_DATA::resetData()
 {
-	_status  = EPS_NONE;
-	_winType = EWCT_NONE;
-	_winCard = NULL;
+	_status        = EPS_NONE;
+	_leaveStatus   = ELS_NONE;
+	_winType       = EWCT_COUNT;
+	_winCard       = NULL;
 	_currentScore  = 0;
 	_zhuang = -1;
 	_double = -1;
@@ -379,7 +380,7 @@ ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::doubleScore(int _doubleValue)
 {
 	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
 
-	if( _doubleValue <= 0 || _doubleValue > 255 )
+	if( _doubleValue < 0 || _doubleValue > 255 )
 	{
 		return EGSE_DATA_ERROR;
 	}
@@ -388,6 +389,23 @@ ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::doubleScore(int _doubleValue)
 	{
 		_double = _doubleValue;
 		_status = EPS_DEALER;
+		_hr     = EGSE_OK;
+	}
+	else
+	{
+		_hr = EGSE_CURRENT_STATUS_ERROR;
+	}
+
+	return _hr;
+}
+
+ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::endThisAround()
+{
+	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
+
+	if( _status == EPS_DEALER )
+	{
+		_status = EPS_END;
 		_hr     = EGSE_OK;
 	}
 	else
@@ -544,13 +562,14 @@ void GAME_DOU_NIU::computerPlayerScore(BASE_ROOM* room, std::string& _info)
 	
 	//////////////////////////////////////////////////////////////////////////
 	//算出庄赢的分数
-	int    _zhuangWinScore = 0;
+	int    _zhuangWinScore    = 0;
+	int    _zhuangtotalDouble = 0;
 
 	{
 		BASE_PLAYER* _player   = _zhuangPlayer;
 
-		const int _totalDouble = _zhuangDouble + _baseDouble + GAME_DOU_NIU::getWinTypeScore(_player);
-		_zhuangWinScore        = _baseScore * _totalDouble;
+		_zhuangtotalDouble = _zhuangDouble + _baseDouble + GAME_DOU_NIU::getWinTypeScore(_player);		
+		_zhuangWinScore        = _baseScore * _zhuangtotalDouble;
 	}
 
 	long long _zhuangCurrentScore = 0;
@@ -570,7 +589,7 @@ void GAME_DOU_NIU::computerPlayerScore(BASE_ROOM* room, std::string& _info)
 		else if( i > _zhuangIndex )
 		{
 			//输庄
-			_player->_currentScore = -_zhuangWinScore * _player->_double;
+			_player->_currentScore = -_baseScore * ( _player->_double + _zhuangtotalDouble );
 
 			////
 			_zhuangCurrentScore -= _player->_currentScore;

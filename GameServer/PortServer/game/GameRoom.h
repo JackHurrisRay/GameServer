@@ -80,7 +80,6 @@ struct BASE_ROOM:
 
 
 	//////////////////////////////////////////////////////////////////////////
-	unsigned char  _current_round;                       //当前局数
 	unsigned char  _baseScore;                           //基础分
 
 	time_t         _start_time;                          //房间创建时间
@@ -169,6 +168,9 @@ public:
 	ENUM_ROOM_ERROR leaveGameRoom(bool _agree, BASE_PLAYER* _player, BASE_ROOM*& _room);
 	//解散房间 0:成功解散房间 1:有人正在游戏中，不可解散房间
 	ENUM_ROOM_ERROR disbandRoomByOwner(short _room_id, BASE_PLAYER* _player);
+
+	////
+	void disbandRoomAfterGameOver(short _room_id);
 
 	//////////////////////////////////////////////////////////////////////////
 	void updateRooms();
