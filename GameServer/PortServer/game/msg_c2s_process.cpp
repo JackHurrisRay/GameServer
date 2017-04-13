@@ -41,7 +41,6 @@ CProtocalFactory::Instance()->bind_func(ENUM_GAME_PROTOCAL::EGP_##X, &NET_CALLBA
 	//////////////////////////////////////////////////////////////////////////
 	BIND_CALLBACK(C2S_NEXT_AROUND);
 	BIND_CALLBACK(C2S_APPLICATE_LEAVE);
-	BIND_CALLBACK(C2S_AGREE_APPLICATE_LEAVE);
 
 	BIND_CALLBACK(C2S_READYGAME);
 	BIND_CALLBACK(C2S_CANCELREADY);

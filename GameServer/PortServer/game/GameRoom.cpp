@@ -1,6 +1,7 @@
 #include "GameRoom.h"
 #include "./../core/ClientObject.h"
 #include "message.h"
+#include "./../game/message_douniu.h"
 #include "json/json.h"
 #include <time.h>
 
@@ -637,7 +638,47 @@ void GameRooms::updateRooms()
 
 		if( _room != NULL )
 		{
+			switch (_room->_PLAYERS_STATUS)
+			{
+			case EPS_DEALER:
+				{
+					PLAYER_LIST _playerList;
+					_room->getPlayersInRoom(_playerList);
 
+					int _count1 = 0;
+					int _count2 = 0;
+
+					for( PLAYER_LIST::iterator cell = _playerList.begin(); cell != _playerList.end(); cell++ )
+					{
+						BASE_PLAYER* player = *cell;
+
+						if( player->_leaveStatus == ELS_AGREE )
+						{
+							_count1 += 1;
+						}
+						else if( player->_leaveStatus == ELS_REFUSE )
+						{
+							_count2 += 1;
+						}
+					}
+
+					if( _count1 > 0 && _count2 == 0 && time(NULL) - _room->_agree_disband > 30 )
+					{
+						//////////////////////////////////////////////////////////////////////////
+						MSG_S2C_ALL_APPLICATE_LEAVE _msg;
+						_msg._dataLArray[0]->setString("0");
+						_msg._dataLArray[1]->setNumber(1);
+						_room->brodcast<MSG_S2C_ALL_APPLICATE_LEAVE>(_msg, NULL);
+
+						//////////////////////////////////////////////////////////////////////////
+						disbandRoomAfterGameOver(_room->_ROOM_ID);
+
+
+					}
+
+					break;
+				}
+			}
 		}
 	}
 }

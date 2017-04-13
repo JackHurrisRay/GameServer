@@ -403,7 +403,7 @@ ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::endThisAround()
 {
 	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
 
-	if( _status == EPS_DEALER )
+	if( _status == EPS_DEALER && _leaveStatus == ELS_NONE )
 	{
 		_status = EPS_END;
 		_hr     = EGSE_OK;
@@ -415,6 +415,24 @@ ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::endThisAround()
 
 	return _hr;
 }
+
+ENUM_GAME_STATUS_ERROR GAME_PLAYER_DATA::applicateLeave()
+{
+	ENUM_GAME_STATUS_ERROR _hr = EGSE_UNKNOWN;
+
+	if( _leaveStatus == ELS_NONE )
+	{
+		_leaveStatus = ELS_AGREE;
+		_hr          = EGSE_OK;
+	}
+	else
+	{
+		_hr = EGSE_CURRENT_STATUS_ERROR;
+	}
+
+	return _hr;
+}
+
 
 /************************************************************************/
 /*                                                                      */
@@ -652,3 +670,8 @@ void GAME_DOU_NIU::computerPlayerScore(BASE_ROOM* room, std::string& _info)
 
 
 }
+
+
+
+
+

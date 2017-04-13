@@ -32,9 +32,16 @@ enum ENUM_PLAYER_STATUS
 enum ENUM_LEAVE_STATUS
 {
 	ELS_NONE = 0,
-	ELS_APPLICATE,                                                          //申请状态
 	ELS_AGREE,                                                              //同意状态
 	ELS_REFUSE,                                                             //拒绝状态
+};
+
+enum ENUM_LEAVE_RESULT
+{
+	ELR_NONE = 0,                                                           //正常申请退出返回
+	ELR_LEAVE_ROOM,                                                         //退出标识
+	ELR_WAIT_OTHERS,                                                        //
+	ELR_TIMEOUT,                                                            //
 };
 
 //牌型种类
@@ -102,6 +109,8 @@ struct GAME_PLAYER_DATA
 	ENUM_GAME_STATUS_ERROR cancelReady();
 	ENUM_GAME_STATUS_ERROR fightForZhuang(int _value);
 	ENUM_GAME_STATUS_ERROR doubleScore(int _double);
+
+	ENUM_GAME_STATUS_ERROR applicateLeave();
 	ENUM_GAME_STATUS_ERROR endThisAround();
 
 	void checkWinCard();

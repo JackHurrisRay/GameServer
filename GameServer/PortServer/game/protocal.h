@@ -68,9 +68,6 @@ enum ENUM_GAME_PROTOCAL
 	EGP_C2S_APPLICATE_LEAVE        = EGP_START__GAME + 4,            //申请离开房间
 	EGP_S2C_ALL_APPLICATE_LEAVE    = EGP_START__GAME + 5,            //
 
-	EGP_C2S_AGREE_APPLICATE_LEAVE  = EGP_START__GAME + 6,            //表态离开房间
-	EGP_S2C_ALL_AGREE_RESULT       = EGP_START__GAME + 7,
-
 	//////////////////////////////////////////////////////////////////////////
 	EGP_C2S_NEXT_AROUND            = EGP_START__GAME + 8,            //开始下一盘游戏
 	EGP_S2C_NEXT_AROUND            = EGP_START__GAME + 9, 

@@ -76,7 +76,7 @@ struct BASE_ROOM:
 
 
 	unsigned char  _MAX_ROUND;                           //最大局数                     
-	unsigned char  _BANKER_TYPE;                         //玩法类型 ENUM_GAME_ROOM_TYPE
+	unsigned char  _BANKER_TYPE;                         //玩法类型 
 
 
 	//////////////////////////////////////////////////////////////////////////

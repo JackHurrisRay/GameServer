@@ -32,6 +32,8 @@
 #define JSON_PLAYER_INDEXINROOM          "player_index_in_room"
 #define JSON_PLAYER_GAMESTATUS           "player_game_status"
 
+#define JSON_PLAYER_LEAVE_STATUS         "leave_status"
+
 #define JSON_IMG_DATA                    "img_data"
 #define JSON_PASSWORD                    "password"
 #define JSON_BASESCORE                   "basescore"

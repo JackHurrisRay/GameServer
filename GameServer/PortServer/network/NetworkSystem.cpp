@@ -7,6 +7,7 @@
 #include "./../core/WebSocketSystem.h"
 #include "./../core/JackBase64.h"
 #include "./../core/ClientObjectSystem.h"
+#include "./../game/GameRoom.h"
 
 ALLOC_PER_HANDLE_DATA _ALLOC_PER_HANDLE_DATA(MAX_CLIENT_CONN, "ALLOC IO HANDLE");
 ALLOC_PER_IO_DATA     _ALLOC_PER_IO_DATA(MAX_CLIENT_CONN, "ALLOC IO DATA");
@@ -392,7 +393,9 @@ void NetworkSystem::running()
 
 		//////////////////////////////////////////////////////////////////////////
 		ClientObjectSystem::Instance()->running();
+		GameRooms::Instance()->updateRooms();
 
+		Sleep(100);
 	}
 }
 
