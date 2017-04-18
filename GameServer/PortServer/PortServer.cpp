@@ -35,6 +35,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//////////////////////////////////////////////////////////////////////////
 	JackBase64::GAME_CONFIG* _config = JackBase64::GAME_CONFIG::Instance();
+	const int _server_port = _config->_SERVER_PORT;
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -43,7 +44,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	HANDLE hMainThread = CreateThread(NULL, 0, thread_exit, NetworkSystem::Instance(), 0, 0);
 	CloseHandle(hMainThread);
 
-	NetworkSystem::Instance()->start(1234);
+	NetworkSystem::Instance()->start(_server_port);
 
 	NetworkSystem::Release();
 

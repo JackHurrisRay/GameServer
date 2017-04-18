@@ -26,6 +26,8 @@ namespace JackBase64
 
 		_PLAYER_PATH = "data\\player\\";
 
+		_SERVER_PORT        = GetPrivateProfileIntA("SERVER", "PORT", 0, _configFilePath);
+
 		//////////////////////////////////////////////////////////////////////////
 		_GAME_MAX_AROUND[0] = GetPrivateProfileIntA("GAME","GAME_MAX_AROUND_1",0,_configFilePath);
 		_GAME_MAX_AROUND[1] = GetPrivateProfileIntA("GAME","GAME_MAX_AROUND_2",0,_configFilePath);
