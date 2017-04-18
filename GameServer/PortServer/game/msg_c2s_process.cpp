@@ -102,6 +102,7 @@ NET_CALLBACK(C2S_LOGIN)
 	//////////////////////////////////////////////////////////////////////////
 	std::string _player_key = data[JSON_PLAYER_KEY].asString();
 	std::string _player_img = data[JSON_PLAYER_IMG].asString();
+	std::string _player_nickname = data[JSON_PLAYER_NICKNAME].asString();
 
 	//////////////////////////////////////////////////////////////////////////
 	//GAME_LOG("PLAYER_KEY:" << _player_key, true);
@@ -150,6 +151,8 @@ NET_CALLBACK(C2S_LOGIN)
 
 		JackBase64::checkPath(_player->_PLAYER_DATA_PATH.c_str());
 		_player->loadData();
+
+		strcpy(_player->_NickName, _player_nickname.c_str());
 
 		//////////////////////////////////////////////////////////////////////////
 		MSG_S2C_LOGIN _msg;

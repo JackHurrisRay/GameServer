@@ -39,8 +39,9 @@ enum ENUM_LEAVE_STATUS
 enum ENUM_LEAVE_RESULT
 {
 	ELR_NONE = 0,                                                           //正常申请退出返回
-	ELR_LEAVE_ROOM,                                                         //退出标识
-	ELR_WAIT_OTHERS,                                                        //
+	ELR_APPLICATE,                                                          //退出标识
+	ELR_ALL_AGREE,                                                          //
+	ELR_NOTPASS,                                                            //
 	ELR_TIMEOUT,                                                            //
 };
 

@@ -312,10 +312,10 @@ bool BASE_ROOM::getPlayersInfo(std::string& _info)
 	if( _check && _zhuangPlayer != NULL )
 	{
 		_root[JSON_ZHUANG_VALUE] = _zhuangValue;
-
-		_root[JSON_ROOM_CURRENT_AROUND] = _currentRound;
-		_root[JSON_ROOM_MAX_AROUND]     = _MAX_ROUND;
 	}
+
+	_root[JSON_ROOM_CURRENT_AROUND] = _currentRound;
+	_root[JSON_ROOM_MAX_AROUND]     = _MAX_ROUND;
 
 	if( _check )
 	{
@@ -662,12 +662,13 @@ void GameRooms::updateRooms()
 						}
 					}
 
-					if( _count1 > 0 && _count2 == 0 && time(NULL) - _room->_agree_disband > 30 )
+					if( _count1 > 0 && _count2 == 0 && time(NULL) - _room->_agree_disband > 300 )
 					{
 						//////////////////////////////////////////////////////////////////////////
 						MSG_S2C_ALL_APPLICATE_LEAVE _msg;
-						_msg._dataLArray[0]->setString("0");
-						_msg._dataLArray[1]->setNumber(1);
+						_msg._dataLArray[0]->setNumber(-1);
+						_msg._dataLArray[1]->setString("0");
+						_msg._dataLArray[2]->setNumber(ENUM_LEAVE_RESULT::ELR_TIMEOUT);
 						_room->brodcast<MSG_S2C_ALL_APPLICATE_LEAVE>(_msg, NULL);
 
 						//////////////////////////////////////////////////////////////////////////
@@ -714,6 +715,7 @@ void GameRooms::disbandRoomAfterGameOver(short _room_id)
 			_player->resetData();
 			_player->_ROOMID = -1;
 			_player->_INDEX  = -1;
+			_player->_status = EPS_NONE;
 		}
 
 		for( int i=0; i<MAX_PLAYER_IN_ROOM; i++ )
@@ -726,6 +728,7 @@ void GameRooms::disbandRoomAfterGameOver(short _room_id)
 		BASE_ROOM* _delRoom = _room;
 		_room   = NULL;
 
+		_delRoom->_PLAYERS_STATUS = EPS_NONE;
 		_ALLOC_ROOM.releaseData(_delRoom);
 	}
 }
