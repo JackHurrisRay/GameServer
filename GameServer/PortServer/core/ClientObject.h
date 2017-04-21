@@ -49,7 +49,7 @@ struct BIG_BUFF
 };
 
 typedef MemAllocPool<BIG_BUFF> ALLOC_BIG_BUFF;
-extern ALLOC_BIG_BUFF _ALLOC_BIG_BUFF;
+//extern ALLOC_BIG_BUFF _ALLOC_BIG_BUFF;
 
 typedef std::list<std::string> STRING_LIST;
 

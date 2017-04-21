@@ -223,7 +223,7 @@ void NetworkSystem::work()
 	while( TRUE )   
 	{   
 		// 在关联到此完成端口的所有套接字上等待I/O完成   
-		BOOL bRet = GetQueuedCompletionStatus( hIocp, &dwTrans, (LPDWORD)&pPerHandle, (LPOVERLAPPED*)&pPerIo, WSA_INFINITE );   
+		BOOL bRet = GetQueuedCompletionStatus( hIocp, &dwTrans, (PULONG_PTR)&pPerHandle, (LPOVERLAPPED*)&pPerIo, WSA_INFINITE );   
 
 		PPER_HANDLE_DATA __pPerHandle = pPerHandle;   
 		PPER_IO_DATA     __pPerIo     = pPerIo; 

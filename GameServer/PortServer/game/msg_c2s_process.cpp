@@ -11,6 +11,9 @@
 #include "Player.h"
 #include "GameRoom.h"
 
+#include <urlmon.h>
+#pragma comment(lib, "urlmon.lib")
+
 //////////////////////////////////////////////////////////////////////////
 FACTORY_BEGIN::FACTORY_BEGIN()
 {
@@ -99,23 +102,36 @@ NET_CALLBACK(C2S_LOGIN)
 {
 	CHECK_MSG_PARAM(MSG_C2S_LOGIN);
 
+	const bool _switch_log = true;
+	GAME_LOG("PLAYER_LOGIN", _switch_log);
+
 	//////////////////////////////////////////////////////////////////////////
 	std::string _player_key = data[JSON_PLAYER_KEY].asString();
 	std::string _player_img = data[JSON_PLAYER_IMG].asString();
 	std::string _player_nickname = data[JSON_PLAYER_NICKNAME].asString();
 
 	//////////////////////////////////////////////////////////////////////////
-	//GAME_LOG("PLAYER_KEY:" << _player_key, true);
-	//GAME_LOG("PLAYER_IMG:" << _player_img, true);
+	GAME_LOG("PLAYER_KEY:" << _player_key, _switch_log);
+	GAME_LOG("PLAYER_IMG:" << _player_img, _switch_log);
 
+	//////////////////////////////////////////////////////////////////////////
+	/*
 	BIG_BUFF* _tempBuff = _ALLOC_BIG_BUFF.createData();
 	_tempBuff->reset();
+
+	GAME_LOG("GET_BIG_BUFF:", _switch_log);
 
 	char* _buff = _tempBuff->_buff;
 	int _img_len = JackBase64::GetInterNetURLText(_player_img.c_str(), _buff, BUFFER_BIG_SIZE);
 
+	GAME_LOG("PLAYER_IMG_LENGTH:" << _img_len, _switch_log);
+
+
 	if( _img_len > 0 )
 	{
+		//////////////////////////////////////////////////////////////////////////
+		GAME_LOG("PLAYER_IMG_SAVE_BEGIN", _switch_log);
+
 		//////////////////////////////////////////////////////////////////////////
 		std::string _player_img_path = JackBase64::GAME_CONFIG::Instance()->_SOURCE_PATH;
 		_player_img_path += "\\";
@@ -127,9 +143,36 @@ NET_CALLBACK(C2S_LOGIN)
 
 		JackBase64::writefile(_player_img_path.c_str(), _buff, _img_len);
 
+		GAME_LOG("PLAYER_IMG_SAVE_END", _switch_log);
+
 	}
 
 	_ALLOC_BIG_BUFF.releaseData(_tempBuff);
+	GAME_LOG("RELEASE_BIG_BUFF:", _switch_log);
+	*/
+
+	//////////////////////////////////////////////////////////////////////////
+	std::string _player_img_path = JackBase64::GAME_CONFIG::Instance()->_SOURCE_PATH;
+	_player_img_path += "\\";
+	_player_img_path += _player_key;
+	JackBase64::checkPath(_player_img_path.c_str());
+	_player_img_path += "\\img_account";
+
+	GAME_LOG("PLAYER_IMG_DOWNLOAD_BEGIN", _switch_log);
+
+	HRESULT _hr = 
+	URLDownloadToFileA(NULL, _player_img.c_str(), _player_img_path.c_str(), BINDF_GETNEWESTVERSION | BINDF_IGNORESECURITYPROBLEM | BINDF_ASYNCSTORAGE, NULL);
+
+	GAME_LOG("PLAYER_IMG_DOWNLOAD_END", _switch_log);
+
+	if( _hr == S_OK )
+	{
+		GAME_LOG("PLAYER_IMG_DOWNLOAD_OK", _switch_log);
+	}
+	else
+	{
+		GAME_LOG("PLAYER_IMG_DOWNLOAD_FAILE", _switch_log);
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	unsigned short _uid = 0xFFFF;

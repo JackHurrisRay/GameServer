@@ -8,6 +8,7 @@
 #include <wininet.h>
 #pragma comment(lib, "wininet.lib")
 
+#include "./../game/game_common.h"
 #include "json/json.h"
 
 namespace JackBase64
@@ -332,26 +333,41 @@ namespace JackBase64
 	/************************************************************************/
 	int GetInterNetURLText(const char* lpcInterNetURL, char*& buff, size_t _bufflen)  
 	{   
+		const bool _switch_log = true;
+		GAME_LOG("GetInterNetURLText:" << _bufflen, _switch_log);
+
 		int _readlen = 0;
 		HINTERNET hSession;     
 		hSession = InternetOpenA("WinInet", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);     
 		__try  
 		{         
-			if(hSession != NULL)          
+			GAME_LOG("GetInterNetURLText in TRY_1:" << hSession, _switch_log);
+
+			if(hSession != 0)          
 			{            
+				GAME_LOG("hRequest of InternetOpenUrlA 1:", _switch_log);
+
 				HINTERNET hRequest;              
-				hRequest = InternetOpenUrlA(hSession,lpcInterNetURL, NULL,0, INTERNET_FLAG_RELOAD, 0);          
+				hRequest = InternetOpenUrlA(hSession,lpcInterNetURL, NULL,0, INTERNET_FLAG_RELOAD, 0);         
+
+				GAME_LOG("hRequest of InternetOpenUrlA 2:" << hRequest, _switch_log);
+
 				__try           
-				{                  
-					if(hRequest != NULL)          
-					{             
+				{   
+					GAME_LOG("GetInterNetURLText in TRY_2:" << hRequest, _switch_log);
+
+					if(hRequest != 0)          
+					{   
 						DWORD dwBytesRead;                    
 						char*& szBuffer = buff;  
 
+						GAME_LOG("GET_FILE_BEGIN", _switch_log);
 						if(InternetReadFile(hRequest, szBuffer, _bufflen, &dwBytesRead))             
 						{                   
 							_readlen = dwBytesRead;               
-						}                 
+						}         
+
+						GAME_LOG("GET_FILE_END", _switch_log);
 					}             
 				}__finally       
 				{                
@@ -361,9 +377,10 @@ namespace JackBase64
 		}__finally      
 		{         
 			InternetCloseHandle(hSession);    
-		}     
+		} 
 
 		return _readlen;
+
 	}  
 
 	void checkPath(const char* _path)
