@@ -58,6 +58,10 @@ enum ENUM_GAME_PROTOCAL
 	EGP_C2S_REQUEST_PLAYERSINROOM  = EGP_START__LOGIN + 50,         //获取房间内所有玩家信息
 	EGP_S2C_REQUEST_PLAYERSINROOM  = EGP_START__LOGIN + 51,      
 
+	////
+	EGP_C2S_PAY_VIP                = EGP_START__LOGIN + 100,
+	EGP_S2C_PAY_VIP                = EGP_START__LOGIN + 101,
+
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

@@ -13,6 +13,13 @@ enum ENUM_PLAYER_TYPE
 	EPT_MONTH,                                                              //包月用户
 };
 
+enum ENUM_ERROR_PLAYER_TYPE
+{
+	EEPT_OK = 0,
+	EEPT_ALREADYVIP,
+	EEPT_FEWGOLD,
+};
+
 struct BASE_OBJECT;
 struct BASE_PLAYER:
 	public GAME_PLAYER_DATA
@@ -25,7 +32,9 @@ struct BASE_PLAYER:
 	short               _ROOMID;                                            //玩家房间标识 0为不可用
 
 	unsigned long long  _GOLD;                                              //金币
+
 	ENUM_PLAYER_TYPE    _EPT_TYPE;                                          //
+	time_t              _VIP_START_TIME;                                    
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -43,6 +52,8 @@ struct BASE_PLAYER:
 	//////////////////////////////////////////////////////////////////////////
 	void saveData();
 	bool loadData();
+
+	bool isVIP();
 
 };
 typedef BASE_PLAYER* LP_BASE_PLAYER;

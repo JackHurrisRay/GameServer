@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "GameRoom.h"
 
+#include <time.h>
 #include <urlmon.h>
 #pragma comment(lib, "urlmon.lib")
 
@@ -40,6 +41,7 @@ CProtocalFactory::Instance()->bind_func(ENUM_GAME_PROTOCAL::EGP_##X, &NET_CALLBA
 
 	BIND_CALLBACK(C2S_DISBAND_ROOM_BY_OWNER);
 	BIND_CALLBACK(C2S_REQUEST_ROOMLIST);
+	BIND_CALLBACK(C2S_PAY_VIP);
 
 	//////////////////////////////////////////////////////////////////////////
 	BIND_CALLBACK(C2S_NEXT_AROUND);
@@ -102,7 +104,7 @@ NET_CALLBACK(C2S_LOGIN)
 {
 	CHECK_MSG_PARAM(MSG_C2S_LOGIN);
 
-	const bool _switch_log = true;
+	const bool _switch_log = false;
 	GAME_LOG("PLAYER_LOGIN", _switch_log);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -186,7 +188,9 @@ NET_CALLBACK(C2S_LOGIN)
 		_player->_CLIENT = client;
 
 		//////////////////////////////////////////////////////////////////////////
-		_player->_GOLD = 1000;
+		_player->_GOLD           = 1000;
+		_player->_EPT_TYPE       = EPT_NONE;
+		_player->_VIP_START_TIME = 0;
 
 		//////////////////////////////////////////////////////////////////////////
 		_player->_PLAYER_DATA_PATH = JackBase64::GAME_CONFIG::Instance()->_PLAYER_PATH;
@@ -232,6 +236,13 @@ NET_CALLBACK(C2S_LOGIN)
 			}
 		}
 
+		//////////////////////////////////////////////////////////////////////////
+		_msg._dataLArray[12]->setNumber(_player->_EPT_TYPE);
+		_msg._dataLArray[13]->setNumber(_player->_VIP_START_TIME);
+		_msg._dataLArray[14]->setNumber(_player->isVIP()?1:0);
+
+
+		//////////////////////////////////////////////////////////////////////////
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);
 
 
@@ -269,7 +280,7 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 	}
 
 	int _room_around_count = data[JSON_ROOM_MAX_AROUND].asInt();
-	if( _room_around_count >= 0 && _room_around_count < 3 )
+	if( !player->isVIP() && _room_around_count >= 0 && _room_around_count < 3 )
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//¿Û³ýgold
@@ -512,6 +523,7 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 	INTEGER_ARRAY _ROOM_RAND_ID_ARRAY;
 	INTEGER_ARRAY _ROOM_PLAYERSCOUNT_ARRAY;
 	INTEGER_ARRAY _ROOM_BASESCORE;
+	INTEGER_ARRAY _ROOM_MAX_AROUND;
 
 	//////////////////////////////////////////////////////////////////////////
 	for(ROOM_LIST::iterator cell = _room_list.begin(); cell != _room_list.end(); cell++ )
@@ -524,6 +536,7 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 			_ROOM_RAND_ID_ARRAY.push_back(_room->_ROOM_ID_RANDFLAG);
 			_ROOM_PLAYERSCOUNT_ARRAY.push_back(_room->getCurrentPlayersCount());
 			_ROOM_BASESCORE.push_back(_room->_baseScore);
+			_ROOM_MAX_AROUND.push_back(_room->_MAX_ROUND);
 		}
 	}
 
@@ -533,9 +546,64 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 		_msg._dataLArray[1]->setIArray(_ROOM_RAND_ID_ARRAY);
 		_msg._dataLArray[2]->setIArray(_ROOM_PLAYERSCOUNT_ARRAY);
 		_msg._dataLArray[3]->setIArray(_ROOM_BASESCORE);
+		_msg._dataLArray[4]->setIArray(_ROOM_MAX_AROUND);
 	}
 
 	SEND_MSG<MSG_S2C_REQUEST_ROOMLIST>(_msg, client);
 
 	return true;
 }
+
+NET_CALLBACK(C2S_PAY_VIP)
+{
+	//////////////////////////////////////////////////////////////////////////
+	CHECK_MSG_PARAM(MSG_C2S_PAY_VIP);
+	CHECK_MSG_LOGIN(client);
+	GET_PLAYER;
+
+	//////////////////////////////////////////////////////////////////////////
+	if( player->isVIP() )
+	{
+		MSG_S2C_PAY_VIP _msg;
+		_msg._error_code = PROTOCAL_ERROR_PLAYER;
+		_msg._error_ex   = EEPT_ALREADYVIP;
+		SEND_MSG<MSG_S2C_PAY_VIP>(_msg, client);
+
+		return true;
+	}
+
+	const ENUM_PLAYER_TYPE _vipLevel = (ENUM_PLAYER_TYPE)data[JSON_PLAYER_VIP].asUInt64();
+
+	if( _vipLevel > 0 && _vipLevel < 4 )
+	{
+		const int _needGold = JackBase64::GAME_CONFIG::Instance()->_GAME_VIP_GOLD[_vipLevel - 1];
+
+		if( _needGold > player->_GOLD )
+		{
+			MSG_S2C_PAY_VIP _msg;
+			_msg._error_code = PROTOCAL_ERROR_PLAYER;
+			_msg._error_ex   = EEPT_FEWGOLD;
+			SEND_MSG<MSG_S2C_PAY_VIP>(_msg, client);
+
+			return true;
+		}
+		else
+		{
+			player->_GOLD = player->_GOLD - _needGold;
+			player->_VIP_START_TIME = time(NULL);
+			player->saveData();
+
+			MSG_S2C_PAY_VIP _msg;
+			_msg._dataLArray[0]->setNumber(0);
+			SEND_MSG<MSG_S2C_PAY_VIP>(_msg, client);
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+
+	return true;
+}
+

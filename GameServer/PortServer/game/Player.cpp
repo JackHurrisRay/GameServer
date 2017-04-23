@@ -4,6 +4,7 @@
 #include "json/json.h"
 #include "./../core/ClientObject.h"
 #include "./../network/NetworkSystem.h"
+#include <time.h>
 
 //////////////////////////////////////////////////////////////////////////
 ALLOC_PLAYER Players::_ALLOC_PLAYER = ALLOC_PLAYER(MAX_PLAYER_LIMIT, "PLAYER ALLOC");
@@ -46,9 +47,12 @@ void BASE_PLAYER::saveData()
 
 	Json::Value _root;
 
-	_root[JSON_PLAYER_KEY]      = _KEY;
-	_root[JSON_PLAYER_NICKNAME] = _NickName;
-	_root[JSON_PLAYER_GOLD]     = _GOLD;
+	_root[JSON_PLAYER_KEY]            = _KEY;
+	_root[JSON_PLAYER_NICKNAME]       = _NickName;
+	_root[JSON_PLAYER_GOLD]           = _GOLD;
+	_root[JSON_PLAYER_VIP]            = _EPT_TYPE;
+	_root[JSON_PLAYER_VIP_STARTTIME]  = _VIP_START_TIME;
+
 
 	Json::FastWriter _writer;
 	std::string _info = _writer.write(_root);
@@ -80,6 +84,9 @@ bool BASE_PLAYER::loadData()
 		{
 			//////////////////////////////////////////////////////////////////////////
 			_GOLD = _root[JSON_PLAYER_GOLD].asUInt64();
+			_EPT_TYPE = (ENUM_PLAYER_TYPE)_root[JSON_PLAYER_VIP].asUInt64();
+			_VIP_START_TIME = _root[JSON_PLAYER_VIP_STARTTIME].asUInt64();
+
 			std::string _nickname = _root[JSON_PLAYER_NICKNAME].asString();
 			strcpy(_NickName, _nickname.c_str());
 
@@ -88,6 +95,45 @@ bool BASE_PLAYER::loadData()
 	}
 
 	return _check;
+}
+
+bool BASE_PLAYER::isVIP()
+{
+	const time_t _current_time = time(NULL);
+	bool _vip = false;
+
+	switch (_EPT_TYPE)
+	{
+	case EPT_NONE:
+
+		break;
+	case EPT_DAY:
+		if( _current_time - _VIP_START_TIME < 24 * 3600 )
+		{
+			_vip = true;
+		}
+
+		break;
+	case EPT_WEEK:
+		if( _current_time - _VIP_START_TIME < 24 * 3600 * 7 )
+		{
+			_vip = true;
+		}
+
+		break;
+	case EPT_MONTH:
+		if( _current_time - _VIP_START_TIME < 24 * 3600 * 30 )
+		{
+			_vip = true;
+		}
+
+		break;
+	default:
+
+		break;
+	}
+
+	return _vip;
 }
 
 void BASE_OBJECT::release()
