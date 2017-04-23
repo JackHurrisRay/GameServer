@@ -300,6 +300,11 @@ BASE_PLAYER* Players::get_player(unsigned short _uid)
 	return _player;
 }
 
+int Players::getPlayerCountOnLine()
+{
+	return _ALLOC_PLAYER.getUsedCound();
+}
+
 bool Players::check_player(unsigned short _uid)
 {
 	PLAYER_LOCK _lock;

@@ -89,7 +89,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	void delete_player(unsigned short _uid);
 	BASE_PLAYER* get_player(unsigned short _uid);
-
+	int getPlayerCountOnLine();
 };
 
 

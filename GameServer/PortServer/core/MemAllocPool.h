@@ -154,6 +154,11 @@ public:
 		m_usedList.clear();
 		m_lock.unlock();
 	}
+
+	int getUsedCound()
+	{
+		return m_usedList.size();
+	}
 };
 
 #endif

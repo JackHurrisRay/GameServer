@@ -280,26 +280,30 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 	}
 
 	int _room_around_count = data[JSON_ROOM_MAX_AROUND].asInt();
-	if( !player->isVIP() && _room_around_count >= 0 && _room_around_count < 3 )
+	if( _room_around_count >= 0 && _room_around_count < 3 )
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//¿Û³ýgold
 
-		int _needGold = JackBase64::GAME_CONFIG::Instance()->_GAME_MAX_AROUND_GOLD[_room_around_count];
-
-		if( player->_GOLD >= _needGold )
+		if( !player->isVIP() )
 		{
-			player->_GOLD -= _needGold;
-		}
-		else
-		{
-			MSG_S2C_CREATE_ROOM _msg;
-			_msg._error_code = PROTOCAL_ERROR_ROOM;
-			_msg._error_ex   = ERE_ROOM_CAN_NOT_CREATED_WITHOUTPAY;
-			SEND_MSG<MSG_S2C_CREATE_ROOM>(_msg, client);
+			int _needGold = JackBase64::GAME_CONFIG::Instance()->_GAME_MAX_AROUND_GOLD[_room_around_count];
 
-			return true;
+			if( player->_GOLD >= _needGold )
+			{
+				player->_GOLD -= _needGold;
+			}
+			else
+			{
+				MSG_S2C_CREATE_ROOM _msg;
+				_msg._error_code = PROTOCAL_ERROR_ROOM;
+				_msg._error_ex   = ERE_ROOM_CAN_NOT_CREATED_WITHOUTPAY;
+				SEND_MSG<MSG_S2C_CREATE_ROOM>(_msg, client);
+
+				return true;
+			}
 		}
+
 	}
 	else
 	{
@@ -590,11 +594,14 @@ NET_CALLBACK(C2S_PAY_VIP)
 		else
 		{
 			player->_GOLD = player->_GOLD - _needGold;
+			player->_EPT_TYPE       = _vipLevel;
 			player->_VIP_START_TIME = time(NULL);
 			player->saveData();
 
 			MSG_S2C_PAY_VIP _msg;
-			_msg._dataLArray[0]->setNumber(0);
+			_msg._dataLArray[0]->setNumber(player->_EPT_TYPE);
+			_msg._dataLArray[1]->setNumber(player->_VIP_START_TIME);
+			_msg._dataLArray[2]->setNumber(player->isVIP()?1:0);
 			SEND_MSG<MSG_S2C_PAY_VIP>(_msg, client);
 		}
 	}

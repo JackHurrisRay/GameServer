@@ -56,6 +56,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	return 0;
 }
 
+//////////////////////////////////////////////////////////////////////////
+#include "game/Player.h"
+
 DWORD WINAPI thread_exit( LPVOID lpParam )
 {
 	char _command[64];
@@ -71,6 +74,14 @@ DWORD WINAPI thread_exit( LPVOID lpParam )
 		{
 			NetworkSystem::Instance()->cmdEnd();
 			break;
+		}
+		else if( strcmpi(_command, "playercount") == 0 )
+		{
+			std::cout << "playercount:" << Players::Instance()->getPlayerCountOnLine() << std::endl;
+		}
+		else if( strcmpi(_command, "clientcount") == 0 )
+		{
+			std::cout << "clientcount:" << _ALLOC_PER_IO_DATA.getUsedCound() << std::endl;
 		}
 
 	}
