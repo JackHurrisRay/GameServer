@@ -20,6 +20,8 @@ enum ENUM_ERROR_PLAYER_TYPE
 	EEPT_FEWGOLD,
 };
 
+#define MAX_ROOM_CANBE_CREATED 3
+
 struct BASE_OBJECT;
 struct BASE_PLAYER:
 	public GAME_PLAYER_DATA
@@ -35,6 +37,8 @@ struct BASE_PLAYER:
 
 	ENUM_PLAYER_TYPE    _EPT_TYPE;                                          //
 	time_t              _VIP_START_TIME;                                    
+
+	int                 _MAX_ROOM_COUNT;                                    //房间最大数，默认为3
 
 
 	//////////////////////////////////////////////////////////////////////////

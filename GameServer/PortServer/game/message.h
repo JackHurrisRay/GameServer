@@ -37,6 +37,7 @@
 #define JSON_PLAYER_VIP                  "vip"
 #define JSON_PLAYER_VIP_STARTTIME        "vip_start"
 #define JSON_PLAYER_IS_VIP               "is_vip"
+#define JSON_MAX_ROOM_CANBECREATED       "max_room_created"
 
 #define JSON_IMG_DATA                    "img_data"
 #define JSON_PASSWORD                    "password"

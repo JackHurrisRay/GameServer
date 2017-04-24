@@ -191,6 +191,7 @@ NET_CALLBACK(C2S_LOGIN)
 		_player->_GOLD           = 1000;
 		_player->_EPT_TYPE       = EPT_NONE;
 		_player->_VIP_START_TIME = 0;
+		_player->_MAX_ROOM_COUNT = MAX_ROOM_CANBE_CREATED;
 
 		//////////////////////////////////////////////////////////////////////////
 		_player->_PLAYER_DATA_PATH = JackBase64::GAME_CONFIG::Instance()->_PLAYER_PATH;
@@ -265,6 +266,21 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 	CHECK_MSG_PARAM(MSG_C2S_CREATE_ROOM);
 	CHECK_MSG_LOGIN(client);
 	GET_PLAYER;
+
+	const unsigned short _UID = player->_PLAYER_ID;
+
+	ROOM_LIST _room_list;
+	GameRooms::Instance()->getRoomsByOwner(_UID, _room_list);
+	if( _room_list.size() >= player->_MAX_ROOM_COUNT )
+	{
+		//限制玩家多开房间
+		MSG_S2C_CREATE_ROOM _msg;
+		_msg._error_code = PROTOCAL_ERROR_ROOM;
+		_msg._error_ex   = ERE_ROOM_MAX_COUNT_LIMITED;
+		SEND_MSG<MSG_S2C_CREATE_ROOM>(_msg, client);
+
+		return true;
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	const int _baseScore = data[JSON_BASESCORE].asInt();

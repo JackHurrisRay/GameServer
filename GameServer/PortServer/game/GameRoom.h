@@ -32,6 +32,7 @@ enum ENUM_ROOM_ERROR
 	ERE_ROOM_WRONG_PASSWORD,                  //密码错误
 	ERE_ROOM_LIMITRIGHT,                      //房间权限问题
 	ERE_ROOM_WRONG_STATUS,                    //房间错误的状态
+	ERE_ROOM_MAX_COUNT_LIMITED,               //开房数目收到限制
 };
 
 //////////////////////////////////////////////////////////////////////////

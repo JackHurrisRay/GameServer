@@ -52,6 +52,7 @@ void BASE_PLAYER::saveData()
 	_root[JSON_PLAYER_GOLD]           = _GOLD;
 	_root[JSON_PLAYER_VIP]            = _EPT_TYPE;
 	_root[JSON_PLAYER_VIP_STARTTIME]  = _VIP_START_TIME;
+	_root[JSON_MAX_ROOM_CANBECREATED] = _MAX_ROOM_COUNT;
 
 
 	Json::FastWriter _writer;
@@ -86,6 +87,12 @@ bool BASE_PLAYER::loadData()
 			_GOLD = _root[JSON_PLAYER_GOLD].asUInt64();
 			_EPT_TYPE = (ENUM_PLAYER_TYPE)_root[JSON_PLAYER_VIP].asUInt64();
 			_VIP_START_TIME = _root[JSON_PLAYER_VIP_STARTTIME].asUInt64();
+			_MAX_ROOM_COUNT = _root[JSON_MAX_ROOM_CANBECREATED].asUInt64();
+
+			if( _MAX_ROOM_COUNT == 0 )
+			{
+				_MAX_ROOM_COUNT = MAX_ROOM_CANBE_CREATED;
+			}
 
 			std::string _nickname = _root[JSON_PLAYER_NICKNAME].asString();
 			strcpy(_NickName, _nickname.c_str());
