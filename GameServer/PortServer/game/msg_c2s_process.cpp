@@ -93,7 +93,12 @@ NET_CALLBACK(C2S_HEART)
 
 	if( !client->popMessage() )
 	{
+		const int       _flag = data[JSON_FLAG].asUInt64();
+		const long long _time = data[JSON_TIME].asUInt64();
+
 		MSG_S2C_HEART _msg;
+		_msg._dataLArray[0]->setNumber(_flag);
+		_msg._dataLArray[1]->setNumber(_time);
 		SEND_MSG<MSG_S2C_HEART>(_msg, client);
 	}
 
@@ -115,43 +120,6 @@ NET_CALLBACK(C2S_LOGIN)
 	//////////////////////////////////////////////////////////////////////////
 	GAME_LOG("PLAYER_KEY:" << _player_key, _switch_log);
 	GAME_LOG("PLAYER_IMG:" << _player_img, _switch_log);
-
-	//////////////////////////////////////////////////////////////////////////
-	/*
-	BIG_BUFF* _tempBuff = _ALLOC_BIG_BUFF.createData();
-	_tempBuff->reset();
-
-	GAME_LOG("GET_BIG_BUFF:", _switch_log);
-
-	char* _buff = _tempBuff->_buff;
-	int _img_len = JackBase64::GetInterNetURLText(_player_img.c_str(), _buff, BUFFER_BIG_SIZE);
-
-	GAME_LOG("PLAYER_IMG_LENGTH:" << _img_len, _switch_log);
-
-
-	if( _img_len > 0 )
-	{
-		//////////////////////////////////////////////////////////////////////////
-		GAME_LOG("PLAYER_IMG_SAVE_BEGIN", _switch_log);
-
-		//////////////////////////////////////////////////////////////////////////
-		std::string _player_img_path = JackBase64::GAME_CONFIG::Instance()->_SOURCE_PATH;
-		_player_img_path += "\\";
-		_player_img_path += _player_key;
-
-		JackBase64::checkPath(_player_img_path.c_str());
-
-		_player_img_path += "\\img_account";
-
-		JackBase64::writefile(_player_img_path.c_str(), _buff, _img_len);
-
-		GAME_LOG("PLAYER_IMG_SAVE_END", _switch_log);
-
-	}
-
-	_ALLOC_BIG_BUFF.releaseData(_tempBuff);
-	GAME_LOG("RELEASE_BIG_BUFF:", _switch_log);
-	*/
 
 	//////////////////////////////////////////////////////////////////////////
 	std::string _player_img_path = JackBase64::GAME_CONFIG::Instance()->_SOURCE_PATH;
@@ -241,7 +209,7 @@ NET_CALLBACK(C2S_LOGIN)
 		_msg._dataLArray[12]->setNumber(_player->_EPT_TYPE);
 		_msg._dataLArray[13]->setNumber(_player->_VIP_START_TIME);
 		_msg._dataLArray[14]->setNumber(_player->isVIP()?1:0);
-
+		_msg._dataLArray[15]->setString(GAME_VERSION);
 
 		//////////////////////////////////////////////////////////////////////////
 		SEND_MSG<MSG_S2C_LOGIN>(_msg, client);

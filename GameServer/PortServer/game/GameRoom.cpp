@@ -282,7 +282,7 @@ bool BASE_ROOM::getPlayersInfo(std::string& _info)
 			_playerData[JSON_PLAYER_NICKNAME] = _player->_NickName;
 			_playerData[JSON_PLAYER_INDEXINROOM] = _player->_INDEX;
 			_playerData[JSON_PLAYER_GAMESTATUS]  = _player->_status;
-			_playerData[JSON_ZHUANG]             = _player->_isZhuang;
+			_playerData[JSON_ZHUANG]             = _player->_isZhuang?1:0;
 			_playerData[JSON_ZHUANG_VALUE]       = _player->_zhuang;
 			_playerData[JSON_DOUBLE]             = _player->_double;
 			_playerData[JSON_PLAYER_TOTALSCORE]  = _player->_totalSCORE;
@@ -476,12 +476,14 @@ ENUM_ROOM_ERROR GameRooms::enterRoom(int _rand_key, BASE_PLAYER* _player, const 
 	if( _player_index_in_room >= 0 )
 	{
 		_room->_Players[_player_index_in_room] = _player;
+
+		//////////////////////////////////////////////////////////////////////////
+		_player->resetData();
+
+		//////////////////////////////////////////////////////////////////////////
 		_player->_ROOMID     = _room->_ROOM_ID;
 		_player->_INDEX      = _player_index_in_room;
 		_player->_totalSCORE = 0;
-
-		//////////////////////////////////////////////////////////////////////////
-		_player->_status = EPS_NONE;
 
 		_result = ERE_ROOM_OK;
 	}

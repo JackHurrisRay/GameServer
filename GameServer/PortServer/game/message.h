@@ -4,6 +4,10 @@
 #include "./../core/ProtocalFactory.h"
 #include "protocal.h"
 
+
+#define GAME_VERSION                     "1.0.0"
+#define JSON_VERSION                     "version"
+
 #define JSON_TIME                        "time"
 #define JSON_FLAG                        "flag"
 #define JSON_ZHUANG                      "zhuang"
@@ -64,7 +68,7 @@ struct MSG_C2S_HEART:
 {
 	MSG_C2S_HEART():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_C2S_HEART)
 	{
-
+		initializeParam(2, JSON_FLAG, JSON_TIME);
 	}
 };
 
@@ -73,7 +77,7 @@ struct MSG_S2C_HEART:
 {
 	MSG_S2C_HEART():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_HEART)
 	{
-		
+		initializeParam(2, JSON_FLAG, JSON_TIME);
 	}
 };
 
@@ -93,12 +97,13 @@ struct MSG_S2C_LOGIN:
 {
 	MSG_S2C_LOGIN():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_LOGIN)
 	{
-		initializeParam(15, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, 
+		initializeParam(16, JSON_PLAYER_UID, JSON_PLAYER_DIAMOND, 
 			JSON_PLAYER_KEY, JSON_PLAYER_NICKNAME, 
 			JSON_ROOM_ID, JSON_ROOM_RANDKEY, JSON_PLAYER_INDEXINROOM, JSON_BASESCORE,
 			JSON_ROOM_GAMESTATUS, JSON_PLAYER_GAMESTATUS,
 			JSON_EX_DATA, JSON_ROOM_PLAYERSINFO_DATA,
-			JSON_PLAYER_VIP, JSON_PLAYER_VIP_STARTTIME, JSON_PLAYER_IS_VIP
+			JSON_PLAYER_VIP, JSON_PLAYER_VIP_STARTTIME, 
+			JSON_PLAYER_IS_VIP,JSON_VERSION
 			);
 	}
 };

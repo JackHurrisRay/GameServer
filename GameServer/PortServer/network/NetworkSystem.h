@@ -2,7 +2,7 @@
 #ifndef _NETWORKSYSTEM_H
 #define _NETWORKSYSTEM_H
 
-#define MAX_CLIENT_CONN 8000
+#define MAX_CLIENT_CONN 4000
 #include "./../core/MemAllocPool.h"
 
 #include <WinSock2.h>
