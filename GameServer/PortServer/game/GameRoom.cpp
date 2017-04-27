@@ -664,7 +664,7 @@ void GameRooms::updateRooms()
 						}
 					}
 
-					if( _count1 > 0 && _count2 == 0 && time(NULL) - _room->_agree_disband > 300 )
+					if( _count1 > 0 && _count2 == 0 && time(NULL) - _room->_agree_disband > 90 )
 					{
 						//////////////////////////////////////////////////////////////////////////
 						MSG_S2C_ALL_APPLICATE_LEAVE _msg;
