@@ -443,13 +443,8 @@ GAME_DOU_NIU::GAME_DOU_NIU():
 
 }
 
-bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, int _limit)
+bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, BASE_PLAYER* _player, std::string& _info)
 {
-	if( _limit >= MAX_CARD_PER_PLAYER )
-	{
-		return false;
-	}
-
 	bool _check = false;
 
 	Json::Value _root;
@@ -459,6 +454,7 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, i
 
 	if( _playerList.size() > 1 )
 	{
+		/*
 		PLAYER_LIST::iterator cell;
 
 		for( cell = _playerList.begin(); cell != _playerList.end(); cell++ )
@@ -479,7 +475,24 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info, i
 
 			_root[JSON_PLAYER].append(_playerJsonData);
 		}
+		*/
 
+		//////////////////////////////////////////////////////////////////////////
+		Json::Value _playerJsonData;
+
+		_playerJsonData[JSON_PLAYER_UID] = _player->_PLAYER_ID;
+		_playerJsonData[JSON_PLAYER_KEY] = _player->_KEY;
+		_playerJsonData[JSON_ZHUANG]     = _player->_isZhuang?1:0;
+		_playerJsonData[JSON_DOUBLE]     = _player->_double;
+
+		for( int i=0; i<MAX_CARD_PER_PLAYER; i++ )
+		{
+			_playerJsonData[JSON_POKECARD].append( _player->_card[i]->_guid );
+		}
+
+		_root[JSON_PLAYER].append(_playerJsonData);
+
+		//////////////////////////////////////////////////////////////////////////
 		_root[JSON_ZHUANG_VALUE] = _room->_zhuangPlayer->_zhuang;
 		_root[JSON_PLAYER_UID]   = _room->_zhuangPlayer->_PLAYER_ID;
 
