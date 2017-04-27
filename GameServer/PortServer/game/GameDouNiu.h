@@ -140,7 +140,7 @@ struct GAME_DOU_NIU
 	//////////////////////////////////////////////////////////////////////////
 	GAME_DOU_NIU();
 
-	static bool getPlayerPokeCardInfo(BASE_ROOM* _room, BASE_PLAYER* _player, std::string& _info);
+	static bool getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info);
 	static void computerPlayerScore(BASE_ROOM* _room, std::string& _info);
 	static int  getWinTypeScore(BASE_PLAYER* _player);
 };

@@ -443,7 +443,7 @@ GAME_DOU_NIU::GAME_DOU_NIU():
 
 }
 
-bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, BASE_PLAYER* _player, std::string& _info)
+bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, std::string& _info)
 {
 	bool _check = false;
 
@@ -477,6 +477,7 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, BASE_PLAYER* _player,
 		}
 		*/
 
+		/*
 		//////////////////////////////////////////////////////////////////////////
 		Json::Value _playerJsonData;
 
@@ -491,6 +492,7 @@ bool GAME_DOU_NIU::getPlayerPokeCardInfo(BASE_ROOM* _room, BASE_PLAYER* _player,
 		}
 
 		_root[JSON_PLAYER].append(_playerJsonData);
+		*/
 
 		//////////////////////////////////////////////////////////////////////////
 		_root[JSON_ZHUANG_VALUE] = _room->_zhuangPlayer->_zhuang;
