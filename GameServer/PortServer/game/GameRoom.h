@@ -47,11 +47,10 @@ enum ENUM_GAME_ROOM_TYPE
 	EGRT_COUNT,
 };
 
-enum ENUM_GAME_ROOM_COUNT
+enum ENUM_ROOM_PLAYER_ONLINE
 {
-	EGRC_10 = 0,
-	EGRC_20,
-	EGRC_30,
+	ERPO_NONE = 0,          //正常状态
+	ERPO_ALLLEAVE,          //玩家都离开了
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -85,10 +84,12 @@ struct BASE_ROOM:
 
 	time_t         _start_time;                          //房间创建时间
 	time_t         _agree_disband;                       //房间解散等待同意的时间
+	time_t         _check_online_time;
 
 	//////////////////////////////////////////////////////////////////////////
-	ENUM_GAME_ROOM_TYPE   _room_type;       
-	ENUM_ROOM_STATUS      _room_status;
+	ENUM_GAME_ROOM_TYPE       _room_type;       
+	ENUM_ROOM_STATUS          _room_status;
+	ENUM_ROOM_PLAYER_ONLINE   _room_player_online;
 
 	//////////////////////////////////////////////////////////////////////////
 	BASE_PLAYER*          _Players[MAX_PLAYER_IN_ROOM];                     //
@@ -110,6 +111,7 @@ struct BASE_ROOM:
 	//////////////////////////////////////////////////////////////////////////
 	//0:都不做声 1:至少有一个赞同并且没有不赞同 2:至少有一个不赞同
 	int  checkPlayerAgreeToLeave();
+	bool checkPlayersOnLine();
 
 	//
 	void clearAgreeToLeave();

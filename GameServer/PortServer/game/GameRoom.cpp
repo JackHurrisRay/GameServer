@@ -117,9 +117,11 @@ void BASE_ROOM::initData()
 	_MAX_ROUND     = 0;
 	_BANKER_TYPE   = 0;
 	_start_time    = time(NULL);
+	_check_online_time = time(NULL);
 
 	_room_type     = EGRT_NONE;
 	_room_status   = ERS_NONE;
+	_room_player_online = ERPO_NONE;
 
 	memset(_Players, 0, sizeof(BASE_PLAYER*)*MAX_PLAYER_IN_ROOM);
 	memset(_AgreeDisband, 0, sizeof(unsigned char)*MAX_PLAYER_IN_ROOM);
@@ -226,6 +228,33 @@ int BASE_ROOM::checkPlayerAgreeToLeave()
 	}
 
 	return _result;
+}
+
+bool BASE_ROOM::checkPlayersOnLine()
+{
+	bool _check = true;
+
+	for( int i=0; i<MAX_PLAYER_IN_ROOM; i++ )
+	{
+		//////////////////////////////////////////////////////////////////////////
+		BASE_PLAYER*& _player = _Players[i];
+
+		if( _player != NULL )
+		{
+			if( _player->_CLIENT == NULL )
+			{
+				_check = false;
+				break;
+			}
+		}
+	}
+
+	if( _check )
+	{
+		_room_player_online = ERPO_NONE;
+	}
+
+	return _check;
 }
 
 void BASE_ROOM::clearAgreeToLeave()
@@ -633,6 +662,7 @@ ENUM_ROOM_ERROR GameRooms::disbandRoomByOwner(short _room_id, BASE_PLAYER* _play
 void GameRooms::updateRooms()
 {
 	ROOM_LOCK _lock;
+	const time_t _currentTime = time(NULL);
 
 	for( int i=0; i<MAX_ROOM_LIMIT; i++ )
 	{
@@ -677,6 +707,34 @@ void GameRooms::updateRooms()
 						disbandRoomAfterGameOver(_room->_ROOM_ID);
 
 
+					}
+
+					break;
+				}
+			default:
+				{
+					if( !_room->checkPlayersOnLine() )
+					{
+						switch(_room->_room_player_online)
+						{
+						case ERPO_NONE:
+							{
+								_room->_room_player_online = ERPO_ALLLEAVE;
+								_room->_check_online_time  = _currentTime;
+								break;
+							}
+						case ERPO_ALLLEAVE:
+							{
+								if( _currentTime - _room->_check_online_time > 60 * 10 )
+								{
+									//////////////////////////////////////////////////////////////////////////
+									//超时，房间需要自动解散
+									disbandRoomAfterGameOver(_room->_ROOM_ID);
+								}
+
+								break;
+							}
+						}
 					}
 
 					break;
