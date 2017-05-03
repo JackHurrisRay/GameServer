@@ -233,6 +233,7 @@ int BASE_ROOM::checkPlayerAgreeToLeave()
 bool BASE_ROOM::checkPlayersOnLine()
 {
 	bool _check = true;
+	bool _noplayer = true;
 
 	for( int i=0; i<MAX_PLAYER_IN_ROOM; i++ )
 	{
@@ -241,12 +242,19 @@ bool BASE_ROOM::checkPlayersOnLine()
 
 		if( _player != NULL )
 		{
+			_noplayer = false;
 			if( _player->_CLIENT == NULL )
 			{
+				//GAME_LOG("ROOM("<<_ROOM_ID<<") is empty",true);
 				_check = false;
 				break;
 			}
 		}
+	}
+
+	if( _noplayer )
+	{
+		_check = false;
 	}
 
 	if( _check )
@@ -730,6 +738,7 @@ void GameRooms::updateRooms()
 									//////////////////////////////////////////////////////////////////////////
 									//超时，房间需要自动解散
 									disbandRoomAfterGameOver(_room->_ROOM_ID);
+									GAME_LOG("ROOM("<<_room->_ROOM_ID<<") is disband for empty", true);
 								}
 
 								break;
