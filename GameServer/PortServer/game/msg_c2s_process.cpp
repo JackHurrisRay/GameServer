@@ -507,11 +507,7 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 	MSG_S2C_REQUEST_ROOMLIST _msg;
 
 	//////////////////////////////////////////////////////////////////////////
-	INTEGER_ARRAY _ROOM_ID_ARRAY;
-	INTEGER_ARRAY _ROOM_RAND_ID_ARRAY;
-	INTEGER_ARRAY _ROOM_PLAYERSCOUNT_ARRAY;
-	INTEGER_ARRAY _ROOM_BASESCORE;
-	INTEGER_ARRAY _ROOM_MAX_AROUND;
+	STRING_ARRAY _stringArray;
 
 	//////////////////////////////////////////////////////////////////////////
 	for(ROOM_LIST::iterator cell = _room_list.begin(); cell != _room_list.end(); cell++ )
@@ -520,21 +516,26 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 
 		if( _room != NULL )
 		{
-			_ROOM_ID_ARRAY.push_back(_room->_ROOM_ID);
-			_ROOM_RAND_ID_ARRAY.push_back(_room->_ROOM_ID_RANDFLAG);
-			_ROOM_PLAYERSCOUNT_ARRAY.push_back(_room->getCurrentPlayersCount());
-			_ROOM_BASESCORE.push_back(_room->_baseScore);
-			_ROOM_MAX_AROUND.push_back(_room->_MAX_ROUND);
+			Json::Value _root;
+			_root[JSON_ROOM_ID] = _room->_ROOM_ID;
+			_root[JSON_ROOM_RANDKEY] = _room->_ROOM_ID_RANDFLAG;
+			_root[JSON_ROOM_PLAYERCOUNT] = _room->getCurrentPlayersCount();
+			_root[JSON_BASESCORE] = _room->_baseScore;
+			_root[JSON_ROOM_MAX_AROUND] = _room->_MAX_ROUND;
+
+			Json::FastWriter _writer;
+			std::string _cell_string = _writer.write(_root);
+			_stringArray.push_back(_cell_string);
 		}
 	}
 
-	if( _ROOM_ID_ARRAY.size() > 0 )
+	if( _stringArray.size() > 0 )
 	{
-		_msg._dataLArray[0]->setIArray(_ROOM_ID_ARRAY);
-		_msg._dataLArray[1]->setIArray(_ROOM_RAND_ID_ARRAY);
-		_msg._dataLArray[2]->setIArray(_ROOM_PLAYERSCOUNT_ARRAY);
-		_msg._dataLArray[3]->setIArray(_ROOM_BASESCORE);
-		_msg._dataLArray[4]->setIArray(_ROOM_MAX_AROUND);
+		_msg._dataLArray[0]->setSArray(_stringArray);
+	}
+	else
+	{
+		_msg._dataLArray[0]->setString("0");
 	}
 
 	SEND_MSG<MSG_S2C_REQUEST_ROOMLIST>(_msg, client);
