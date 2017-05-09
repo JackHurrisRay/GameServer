@@ -11,6 +11,9 @@ namespace JackBase64
 	{
 		int         _SERVER_PORT;
 
+		int         _comServerPort;
+		std::string _comServerAddress;
+
 		//////////////////////////////////////////////////////////////////////////
 		std::string _SOURCE_PATH; //存放web可用数据
 		std::string _PLAYER_PATH; //存放可靠保存数据

@@ -59,7 +59,6 @@
 #define JSON_ROOM_GAMESTATUS             "room_game_status"
 
 #define JSON_EX_DATA                     "extern_data"
-
 #define JSON_STATUS                      "STATUS"
 
 //////////////////////////////////////////////////////////////////////////

@@ -8,6 +8,7 @@
 #include "./../core/JackBase64.h"
 #include "./../core/ClientObjectSystem.h"
 #include "./../game/GameRoom.h"
+#include "comClient.h"
 
 ALLOC_PER_HANDLE_DATA _ALLOC_PER_HANDLE_DATA(MAX_CLIENT_CONN, "ALLOC IO HANDLE");
 ALLOC_PER_IO_DATA     _ALLOC_PER_IO_DATA(MAX_CLIENT_CONN, "ALLOC IO DATA");
@@ -37,13 +38,27 @@ NetworkSystem::NetworkSystem(void):
 	WSADATA wsaData;
 	int _hr = WSAStartup(MAKEWORD(2,2), &wsaData);
 
+	int _lastError = WSAGetLastError();
+
 	ClientObjectSystem::Instance();
+
+	if( comClient::Instance()->start() && comClient::Instance()->comCheck() )
+	{
+		GAME_LOG("Success to connect COM SERVER", true);
+	}
+	else
+	{
+		GAME_LOG("Failed to connect COM SERVER", true);
+	}
 }
 
 
 NetworkSystem::~NetworkSystem(void)
 {
+	comClient::Instance()->end();
+
 	ClientObjectSystem::Release();
+	WSACleanup();
 }
 
 void NetworkSystem::cmdEnd()
@@ -60,18 +75,28 @@ void NetworkSystem::start(int port)
 	//////////////////////////////////////////////////////////////////////////
 	m_hIocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 	m_listener = socket(AF_INET, SOCK_STREAM, 0);
-
+	int _lastError = WSAGetLastError();
 
 	//////////////////////////////////////////////////////////////////////////
 	SOCKADDR_IN addr;
+	memset(&addr, 0, sizeof(SOCKADDR_IN));
 
 	addr.sin_family = AF_INET;
 	addr.sin_port   = htons(port);
 	addr.sin_addr.S_un.S_addr = INADDR_ANY;
+	
+	::bind( m_listener, (sockaddr *)&addr, sizeof(sockaddr) );
+	_lastError = WSAGetLastError();
 
-	bind( m_listener, (sockaddr *)&addr, sizeof(addr) );
-	listen( m_listener, 5 );
+	int ret = listen( m_listener, 1 );
 
+	if( ret != 0 )
+	{
+		_lastError = WSAGetLastError();
+		GAME_LOG("Server listen faild, error code:"<<_lastError, true);
+
+		return;
+	}
 
 	//cpu个数*2+2 通常为最佳线程数  
 	SYSTEM_INFO sysInfo;  

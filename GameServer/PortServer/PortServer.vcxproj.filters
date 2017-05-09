@@ -40,9 +40,6 @@
     <Filter Include="game\room">
       <UniqueIdentifier>{f27b124e-36c7-4617-baa4-d1e7bdfd8b0f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\hall">
-      <UniqueIdentifier>{84483bab-c85d-4180-9d99-64569f0d96bb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="game\logic">
       <UniqueIdentifier>{ec19fa4b-a7e6-4243-9cf5-b2be91f8499d}</UniqueIdentifier>
     </Filter>
@@ -51,6 +48,9 @@
     </Filter>
     <Filter Include="res">
       <UniqueIdentifier>{75c6e212-5924-477f-9400-cbefce26ce2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="comclient">
+      <UniqueIdentifier>{70fa031c-1178-4e58-b360-74d4d3032643}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +159,9 @@
     <ClInclude Include="game\message_douniu.h">
       <Filter>game\protocal</Filter>
     </ClInclude>
+    <ClInclude Include="network\comClient.h">
+      <Filter>comclient</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -224,10 +227,16 @@
     <ClCompile Include="game\msg_c2s_process_Game.cpp">
       <Filter>game\protocal</Filter>
     </ClCompile>
+    <ClCompile Include="network\comClient.cpp">
+      <Filter>comclient</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\data\config.ini">
       <Filter>res</Filter>
+    </None>
+    <None Include="..\..\..\..\DouNiuGameClient.git\trunk\H5CocosSampler\game\clientSystem.js">
+      <Filter>game\room</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -24,10 +24,15 @@ namespace JackBase64
 
 		_hr = GetPrivateProfileStringA("SERVER", "SOURCE_PATH", "", _BUFF, sizeof(_BUFF), _configFilePath);
 		_SOURCE_PATH = _BUFF;
-
 		_PLAYER_PATH = "data\\player\\";
 
+		//////////////////////////////////////////////////////////////////////////
 		_SERVER_PORT        = GetPrivateProfileIntA("SERVER", "PORT", 0, _configFilePath);
+
+		//////////////////////////////////////////////////////////////////////////
+		_comServerPort      = GetPrivateProfileIntA("SERVER", "comport", 0, _configFilePath);
+		_hr = GetPrivateProfileStringA("SERVER", "comserver", "", _BUFF, sizeof(_BUFF), _configFilePath);
+		_comServerAddress   = _BUFF;
 
 		//////////////////////////////////////////////////////////////////////////
 		_GAME_MAX_AROUND[0] = GetPrivateProfileIntA("GAME","GAME_MAX_AROUND_1",0,_configFilePath);
