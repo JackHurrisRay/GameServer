@@ -57,6 +57,7 @@
 #define JSON_ROOM_MAX_AROUND             "room_max_around"
 #define JSON_ROOM_PLAYERSINFO_DATA       "room_players_info"
 #define JSON_ROOM_GAMESTATUS             "room_game_status"
+#define JSON_ROOM_APPLCATELEAVE          "room_applicate_leave"
 
 #define JSON_EX_DATA                     "extern_data"
 #define JSON_STATUS                      "STATUS"

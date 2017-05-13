@@ -82,6 +82,7 @@ struct BASE_ROOM:
 	//////////////////////////////////////////////////////////////////////////
 	unsigned char  _baseScore;                           //基础分
 
+
 	time_t         _start_time;                          //房间创建时间
 	time_t         _agree_disband;                       //房间解散等待同意的时间
 	time_t         _check_online_time;
@@ -91,9 +92,10 @@ struct BASE_ROOM:
 	ENUM_ROOM_STATUS          _room_status;
 	ENUM_ROOM_PLAYER_ONLINE   _room_player_online;
 
-	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////	
 	BASE_PLAYER*          _Players[MAX_PLAYER_IN_ROOM];                     //
 	unsigned char         _AgreeDisband[MAX_PLAYER_IN_ROOM];                //0:初始状态 1:同意 2不同意
+	int                   _AgreeDisbandStatus;                              //0:普通状态 1:正在申请退出房间
 
 	BASE_ROOM();
 	void initData();
@@ -117,6 +119,8 @@ struct BASE_ROOM:
 	void clearAgreeToLeave();
 	int  getCurrentPlayersCount();
 	void getPlayersInRoom(PLAYER_LIST& _playerList);
+	int  getExDataFromApplicateLeave(std::string& _exData);
+	int  getExDataFromApplicateLeave(Json::Value& _root);
 
 	//////////////////////////////////////////////////////////////////////////
 	template<class T>
@@ -149,6 +153,7 @@ protected:
 	static ALLOC_ROOM _ALLOC_ROOM;
 	LP_BASE_ROOM*     m_rooms;
 	Locker            m_lock;
+	time_t            m_currentTime;
 
 	friend class ROOM_LOCK;
 
@@ -177,6 +182,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	void updateRooms();
+
+	void updateForApplicateLeave(BASE_ROOM* _room);
+	void updateForTimeoutDisbandRoom(BASE_ROOM* _room);
 
 	void getRoomsByOwner(const unsigned short _player_id, ROOM_LIST& _room_list);
 };

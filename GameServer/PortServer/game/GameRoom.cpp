@@ -122,6 +122,7 @@ void BASE_ROOM::initData()
 	_room_type     = EGRT_NONE;
 	_room_status   = ERS_NONE;
 	_room_player_online = ERPO_NONE;
+	_AgreeDisbandStatus = 0;
 
 	memset(_Players, 0, sizeof(BASE_PLAYER*)*MAX_PLAYER_IN_ROOM);
 	memset(_AgreeDisband, 0, sizeof(unsigned char)*MAX_PLAYER_IN_ROOM);
@@ -356,6 +357,14 @@ bool BASE_ROOM::getPlayersInfo(std::string& _info)
 
 	if( _check )
 	{
+		//////////////////////////////////////////////////////////////////////////
+		Json::Value _applicateLeaveData;
+		if( _AgreeDisbandStatus == 1 && getExDataFromApplicateLeave(_applicateLeaveData) > 0 )
+		{
+			_root[JSON_ROOM_APPLCATELEAVE] = _applicateLeaveData;
+		}
+
+		//////////////////////////////////////////////////////////////////////////
 		Json::FastWriter _writer;
 		_info = _writer.write(_root);
 	}
@@ -363,6 +372,46 @@ bool BASE_ROOM::getPlayersInfo(std::string& _info)
 	return _check;
 
 }
+
+int BASE_ROOM::getExDataFromApplicateLeave(Json::Value& _root)
+{
+	PLAYER_LIST _player_list;
+	getPlayersInRoom(_player_list);
+
+	int _count = 0;
+
+	for( PLAYER_LIST::iterator cell = _player_list.begin(); cell != _player_list.end(); cell++ )
+	{
+		BASE_PLAYER* _player = *cell;
+
+		Json::Value _playerJsonData;
+		_playerJsonData[JSON_PLAYER_UID]          = _player->_PLAYER_ID;
+		_playerJsonData[JSON_PLAYER_LEAVE_STATUS] = _player->_leaveStatus;
+
+		if( _player->_leaveStatus ==  ELS_AGREE )
+		{
+			_count += 1;
+		}
+
+		_root.append(_playerJsonData);
+	}
+
+	return _count;
+}
+
+int BASE_ROOM::getExDataFromApplicateLeave(std::string& _exData)
+{
+	Json::Value _root;
+	std::string& _EX_DATA = _exData;
+
+	int _count = getExDataFromApplicateLeave(_root);
+
+	Json::FastWriter _writer;
+	_EX_DATA = _writer.write(_root);
+
+	return _count;
+}
+
 
 /************************************************************************/
 /*                                                                      */
@@ -667,10 +716,79 @@ ENUM_ROOM_ERROR GameRooms::disbandRoomByOwner(short _room_id, BASE_PLAYER* _play
 	return _result;
 }
 
+void GameRooms::updateForApplicateLeave(BASE_ROOM* _room)
+{
+	if( _room->_AgreeDisbandStatus == 1 )
+	{
+		PLAYER_LIST _playerList;
+		_room->getPlayersInRoom(_playerList);
+
+		int _count1 = 0;
+		int _count2 = 0;
+
+		for( PLAYER_LIST::iterator cell = _playerList.begin(); cell != _playerList.end(); cell++ )
+		{
+			BASE_PLAYER* player = *cell;
+
+			if( player->_leaveStatus == ELS_AGREE )
+			{
+				_count1 += 1;
+			}
+			else if( player->_leaveStatus == ELS_REFUSE )
+			{
+				_count2 += 1;
+			}
+		}
+
+		if( _count1 > 0 && _count2 == 0 && time(NULL) - _room->_agree_disband > 90 )
+		{
+			//////////////////////////////////////////////////////////////////////////
+			MSG_S2C_ALL_APPLICATE_LEAVE _msg;
+			_msg._dataLArray[0]->setNumber(-1);
+			_msg._dataLArray[1]->setString("0");
+			_msg._dataLArray[2]->setNumber(ENUM_LEAVE_RESULT::ELR_TIMEOUT);
+			_room->brodcast<MSG_S2C_ALL_APPLICATE_LEAVE>(_msg, NULL);
+
+			//////////////////////////////////////////////////////////////////////////
+			disbandRoomAfterGameOver(_room->_ROOM_ID);
+		}
+	}
+}
+
+void GameRooms::updateForTimeoutDisbandRoom(BASE_ROOM* _room)
+{
+	const time_t _currentTime = m_currentTime;
+
+	if( !_room->checkPlayersOnLine() )
+	{
+		switch(_room->_room_player_online)
+		{
+		case ERPO_NONE:
+			{
+				_room->_room_player_online = ERPO_ALLLEAVE;
+				_room->_check_online_time  = _currentTime;
+				break;
+			}
+		case ERPO_ALLLEAVE:
+			{
+				if( _currentTime - _room->_check_online_time > 60 * 10 )
+				{
+					//////////////////////////////////////////////////////////////////////////
+					//超时，房间需要自动解散
+					disbandRoomAfterGameOver(_room->_ROOM_ID);
+					GAME_LOG("ROOM("<<_room->_ROOM_ID<<") is disband for empty", true);
+				}
+
+				break;
+			}
+		}
+	}
+}
+
 void GameRooms::updateRooms()
 {
 	ROOM_LOCK _lock;
-	const time_t _currentTime = time(NULL);
+	m_currentTime = time(NULL);
 
 	for( int i=0; i<MAX_ROOM_LIMIT; i++ )
 	{
@@ -678,73 +796,20 @@ void GameRooms::updateRooms()
 
 		if( _room != NULL )
 		{
+			updateForTimeoutDisbandRoom(_room);
+			updateForApplicateLeave(_room);
+
 			switch (_room->_PLAYERS_STATUS)
 			{
 			case EPS_DEALER:
 				{
-					PLAYER_LIST _playerList;
-					_room->getPlayersInRoom(_playerList);
-
-					int _count1 = 0;
-					int _count2 = 0;
-
-					for( PLAYER_LIST::iterator cell = _playerList.begin(); cell != _playerList.end(); cell++ )
-					{
-						BASE_PLAYER* player = *cell;
-
-						if( player->_leaveStatus == ELS_AGREE )
-						{
-							_count1 += 1;
-						}
-						else if( player->_leaveStatus == ELS_REFUSE )
-						{
-							_count2 += 1;
-						}
-					}
-
-					if( _count1 > 0 && _count2 == 0 && time(NULL) - _room->_agree_disband > 90 )
-					{
-						//////////////////////////////////////////////////////////////////////////
-						MSG_S2C_ALL_APPLICATE_LEAVE _msg;
-						_msg._dataLArray[0]->setNumber(-1);
-						_msg._dataLArray[1]->setString("0");
-						_msg._dataLArray[2]->setNumber(ENUM_LEAVE_RESULT::ELR_TIMEOUT);
-						_room->brodcast<MSG_S2C_ALL_APPLICATE_LEAVE>(_msg, NULL);
-
-						//////////////////////////////////////////////////////////////////////////
-						disbandRoomAfterGameOver(_room->_ROOM_ID);
-
-
-					}
+					
 
 					break;
 				}
 			default:
 				{
-					if( !_room->checkPlayersOnLine() )
-					{
-						switch(_room->_room_player_online)
-						{
-						case ERPO_NONE:
-							{
-								_room->_room_player_online = ERPO_ALLLEAVE;
-								_room->_check_online_time  = _currentTime;
-								break;
-							}
-						case ERPO_ALLLEAVE:
-							{
-								if( _currentTime - _room->_check_online_time > 60 * 10 )
-								{
-									//////////////////////////////////////////////////////////////////////////
-									//超时，房间需要自动解散
-									disbandRoomAfterGameOver(_room->_ROOM_ID);
-									GAME_LOG("ROOM("<<_room->_ROOM_ID<<") is disband for empty", true);
-								}
-
-								break;
-							}
-						}
-					}
+					
 
 					break;
 				}
@@ -801,3 +866,4 @@ void GameRooms::disbandRoomAfterGameOver(short _room_id)
 		_ALLOC_ROOM.releaseData(_delRoom);
 	}
 }
+
