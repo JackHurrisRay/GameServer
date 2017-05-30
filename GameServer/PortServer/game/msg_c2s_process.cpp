@@ -114,10 +114,11 @@ NET_CALLBACK(C2S_LOGIN)
 
 	//////////////////////////////////////////////////////////////////////////
 	std::string _player_key = data[JSON_PLAYER_KEY].asString();
-	std::string _player_img = data[JSON_PLAYER_IMG].asString();
+	//std::string _player_img = data[JSON_PLAYER_IMG].asString();
 	std::string _player_nickname = data[JSON_PLAYER_NICKNAME].asString();
 
 	//////////////////////////////////////////////////////////////////////////
+	/*
 	GAME_LOG("PLAYER_KEY:" << _player_key, _switch_log);
 	GAME_LOG("PLAYER_IMG:" << _player_img, _switch_log);
 
@@ -143,6 +144,7 @@ NET_CALLBACK(C2S_LOGIN)
 	{
 		GAME_LOG("PLAYER_IMG_DOWNLOAD_FAILE", _switch_log);
 	}
+	*/
 
 	//////////////////////////////////////////////////////////////////////////
 	unsigned short _uid = 0xFFFF;
