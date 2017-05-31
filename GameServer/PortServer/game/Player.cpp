@@ -79,7 +79,7 @@ bool BASE_PLAYER::loadData()
 		if( _reader.parse(_info, _root) )
 		{
 			//////////////////////////////////////////////////////////////////////////
-			_GOLD = _root[JSON_PLAYER_GOLD].asUInt64();
+			//_GOLD = _root[JSON_PLAYER_GOLD].asUInt64();
 			_EPT_TYPE = (ENUM_PLAYER_TYPE)_root[JSON_PLAYER_VIP].asUInt64();
 			_VIP_START_TIME = _root[JSON_PLAYER_VIP_STARTTIME].asUInt64();
 			_MAX_ROOM_COUNT = _root[JSON_MAX_ROOM_CANBECREATED].asUInt64();
@@ -89,8 +89,8 @@ bool BASE_PLAYER::loadData()
 				_MAX_ROOM_COUNT = MAX_ROOM_CANBE_CREATED;
 			}
 
-			std::string _nickname = _root[JSON_PLAYER_NICKNAME].asString();
-			strcpy(_NickName, _nickname.c_str());
+			//std::string _nickname = _root[JSON_PLAYER_NICKNAME].asString();
+			//strcpy(_NickName, _nickname.c_str());
 
 			_check = true;
 		}

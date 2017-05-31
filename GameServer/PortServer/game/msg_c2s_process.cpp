@@ -6,6 +6,7 @@
 #include "protocal.h"
 #include "message.h"
 #include "./../core/ClientObject.h"
+#include "./../network/comClient.h"
 
 //////////////////////////////////////////////////////////////////////////
 #include "Player.h"
@@ -163,6 +164,19 @@ NET_CALLBACK(C2S_LOGIN)
 		_player->_VIP_START_TIME = 0;
 		_player->_MAX_ROOM_COUNT = MAX_ROOM_CANBE_CREATED;
 
+		GAME_LOG("client login step1", true);
+
+		comClient::Instance()->request_GOLD(_player,
+			[](BASE_PLAYER* player,  long long GOLD)
+			{
+				//////////////////////////////////////////////////////////////////////////
+				player->_GOLD = GOLD;
+			}
+			);
+
+
+		GAME_LOG("client login step2", true);
+
 		//////////////////////////////////////////////////////////////////////////
 		_player->_PLAYER_DATA_PATH = JackBase64::GAME_CONFIG::Instance()->_PLAYER_PATH;
 		_player->_PLAYER_DATA_PATH += _player_key;
@@ -277,7 +291,14 @@ NET_CALLBACK(C2S_CREATE_ROOM)
 
 			if( player->_GOLD >= _needGold )
 			{
-				player->_GOLD -= _needGold;
+				//player->_GOLD -= _needGold;
+				comClient::Instance()->request_GOLD_Cost(_needGold, player, 
+					[](BASE_PLAYER* player,  long long GOLD)
+						{
+							//////////////////////////////////////////////////////////////////////////
+							player->_GOLD = GOLD;
+						}
+					);
 			}
 			else
 			{
@@ -580,7 +601,15 @@ NET_CALLBACK(C2S_PAY_VIP)
 		}
 		else
 		{
-			player->_GOLD = player->_GOLD - _needGold;
+			//player->_GOLD = player->_GOLD - _needGold;
+			comClient::Instance()->request_GOLD_Cost(_needGold, player, 
+				[](BASE_PLAYER* player,  long long GOLD)
+			{
+				//////////////////////////////////////////////////////////////////////////
+				player->_GOLD = GOLD;
+			}
+			);
+
 			player->_EPT_TYPE       = _vipLevel;
 			player->_VIP_START_TIME = time(NULL);
 			player->saveData();
