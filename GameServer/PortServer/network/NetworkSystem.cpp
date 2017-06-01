@@ -42,14 +42,8 @@ NetworkSystem::NetworkSystem(void):
 
 	ClientObjectSystem::Instance();
 
-	if( comClient::Instance()->start() && comClient::Instance()->comCheck() )
-	{
-		GAME_LOG("Success to connect COM SERVER", true);
-	}
-	else
-	{
-		GAME_LOG("Failed to connect COM SERVER", true);
-	}
+	comClient::Instance()->start();
+
 }
 
 
@@ -163,6 +157,12 @@ void NetworkSystem::listen_connected()
 			break;
 		}
 
+		if( !comClient::Instance()->isConn() )
+		{
+			Sleep(1000);
+			continue;
+		}
+
 		//////////////////////////////////////////////////////////////////////////
 		SOCKADDR_IN saRemote;   
 		int nRemoteLen = sizeof( saRemote );   
@@ -258,7 +258,7 @@ void NetworkSystem::work()
 			break;
 		}
 
-		if( !bRet )     // 发生错误   
+		if( !bRet || !comClient::Instance()->isConn() )     // 发生错误   
 		{   
 			closeClientSocket( __pPerHandle, __pPerIo );
 			cout << "error" << endl;   
@@ -465,6 +465,5 @@ DWORD WINAPI thread_logic( LPVOID lpParam )
 
 	cout << "server logic exit......" << endl; 
 
-	return 0;
 	return 0;
 }

@@ -159,7 +159,7 @@ NET_CALLBACK(C2S_LOGIN)
 		_player->_CLIENT = client;
 
 		//////////////////////////////////////////////////////////////////////////
-		_player->_GOLD           = 1000;
+		_player->_GOLD           = 0;
 		_player->_EPT_TYPE       = EPT_NONE;
 		_player->_VIP_START_TIME = 0;
 		_player->_MAX_ROOM_COUNT = MAX_ROOM_CANBE_CREATED;
@@ -467,6 +467,15 @@ NET_CALLBACK(C2S_LEAVE_ROOM)
 		//////////////////////////////////////////////////////////////////////////
 		_room->brodcast<MSG_S2C_LEAVE_ROOM>(_msg1, player);
 
+		comClient::Instance()->request_GOLD(player,
+			[](BASE_PLAYER* player,  long long GOLD)
+		{
+			//////////////////////////////////////////////////////////////////////////
+			player->_GOLD = GOLD;
+		}
+		);
+
+		//////////////////////////////////////////////////////////////////////////
 		MSG_S2C_LEAVE_ROOM _msg2;
 		_msg2._dataLArray[0]->setNumber(player->_PLAYER_ID);
 		_msg2._dataLArray[1]->setNumber(_room->_ROOM_ID);
