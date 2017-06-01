@@ -16,7 +16,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 #define __LOG_FLAG true
-#define GAME_LOG(X, _switch) if(__LOG_FLAG && _switch){std::cout << "******LOG:" << X << "******" << std::endl;}
+#define GAME_LOG(X, _switch) if(__LOG_FLAG && _switch){std::cout << "******LOG:" << X << "******" << std::endl;fflush(stdout);}
 
 typedef std::list<unsigned short> UINT16_LIST;
 typedef std::list<unsigned int>   UINT32_LIST;

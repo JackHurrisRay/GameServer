@@ -51,7 +51,8 @@ struct ROOM_ID_RAND_FLAG
 
 	ROOM_ID_RAND_FLAG()
 	{
-		std::cout << "******BEGIN:create room rand ID******" << std::endl;
+		GAME_LOG( "******BEGIN:create room rand ID******" << std::endl, true );
+
 		for(int i=0; i<MAX_ROOM_LIMIT; i++)
 		{
 			int _value = 0xFFFFFF;
@@ -66,7 +67,8 @@ struct ROOM_ID_RAND_FLAG
 				}
 			}
 		}
-		std::cout << "******END:create room rand ID******" << std::endl;
+
+		GAME_LOG( "******END:create room rand ID******" << std::endl, true );
 	}
 
 	~ROOM_ID_RAND_FLAG()

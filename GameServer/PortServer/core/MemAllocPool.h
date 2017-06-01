@@ -1,6 +1,8 @@
 #ifndef _MEMALLOCPOOL_H
 #define _MEMALLOCPOOL_H
 
+#include "./../game/game_common.h"
+
 #include <iostream>
 #include <list>
 #include <WinSock2.h>
@@ -59,7 +61,7 @@ public:
 	{
 		if( _INFO )
 		{
-			std::cout << _INFO << std::endl;
+			GAME_LOG( _INFO << std::endl, true );
 		}
 
 		m_lock.lock();
@@ -72,7 +74,7 @@ public:
 
 		if( _INFO )
 		{
-			std::cout << "----alloc:" << m_unuseList.size() << "---" << std::endl;
+			GAME_LOG( "----alloc:" << m_unuseList.size() << "---" << std::endl, true );
 		}
 	}
 
@@ -80,7 +82,7 @@ public:
 	{
 		if( _INFO )
 		{
-			std::cout << "----release alloc---" << _INFO << std::endl;
+			GAME_LOG( "----release alloc---" << _INFO << std::endl, true );
 		}
 
 		m_lock.lock();
@@ -103,7 +105,7 @@ public:
 
 		if( _INFO )
 		{
-			std::cout << "----end release alloc---" << std::endl;
+			GAME_LOG( "----end release alloc---" << std::endl, true );
 		}
 	}
 

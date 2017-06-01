@@ -8,6 +8,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 #include "game/PokeCard.h"
+#include "game/game_common.h"
 #include "common/JACK_LIST.h"
 #include "core/JackBase64.h"
 
@@ -50,7 +51,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//////////////////////////////////////////////////////////////////////////
 	int i;
-	std::cout << "press any key to exit..." << std::endl;
+	GAME_LOG( "press any key to exit..." << std::endl, true );
 	std::cin >> i;
 
 	return 0;
@@ -70,8 +71,6 @@ DWORD WINAPI thread_exit( LPVOID lpParam )
 		fflush(stdin);
 		std::cin >> _command;
 
-		//std::cout << "out:" << _command << std::endl;
-
 		if(strcmpi(_command, "exit") == 0)
 		{
 			NetworkSystem::Instance()->cmdEnd();
@@ -79,11 +78,11 @@ DWORD WINAPI thread_exit( LPVOID lpParam )
 		}
 		else if( strcmpi(_command, "playercount") == 0 )
 		{
-			std::cout << "playercount:" << Players::Instance()->getPlayerCountOnLine() << std::endl;
+			GAME_LOG( "playercount:" << Players::Instance()->getPlayerCountOnLine() << std::endl, true );
 		}
 		else if( strcmpi(_command, "clientcount") == 0 )
 		{
-			std::cout << "clientcount:" << _ALLOC_PER_IO_DATA.getUsedCound() << std::endl;
+			GAME_LOG( "clientcount:" << _ALLOC_PER_IO_DATA.getUsedCound() << std::endl, true );
 		}
 
 	}

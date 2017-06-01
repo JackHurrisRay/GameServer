@@ -301,7 +301,7 @@ int BASE_OBJECT::packet_buff(std::string _inMessage, char* _OUTBUFF)
 	int ret = -1;  
 
 	//////////////////////////////////////////////////////////////////////////
-	const unsigned int messageLength = _MSG_STR.size();  
+	const unsigned int messageLength = (unsigned int)_MSG_STR.size();  
 	if (messageLength > BUFFER_SIZE - 10)  
 	{  
 		// 暂不支持这么长的数据  

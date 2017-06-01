@@ -28,7 +28,7 @@ FACTORY_BEGIN::FACTORY_BEGIN()
 CProtocalFactory::Instance()->bind_func(ENUM_GAME_PROTOCAL::EGP_##X, &NET_CALLBACK_##X)
 
 	//////////////////////////////////////////////////////////////////////////
-	std::cout << "...init protocal..." << std::endl;
+	GAME_LOG( "...init protocal..." << std::endl, true );
 
 	BIND_CALLBACK(C2S_HEART);
 
