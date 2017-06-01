@@ -66,6 +66,8 @@ DWORD WINAPI thread_exit( LPVOID lpParam )
 	while (true)
 	{
 		memset(_command, 0, sizeof(_command));
+
+		fflush(stdin);
 		std::cin >> _command;
 
 		//std::cout << "out:" << _command << std::endl;
