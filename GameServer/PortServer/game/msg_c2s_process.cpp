@@ -44,6 +44,8 @@ CProtocalFactory::Instance()->bind_func(ENUM_GAME_PROTOCAL::EGP_##X, &NET_CALLBA
 	BIND_CALLBACK(C2S_REQUEST_ROOMLIST);
 	BIND_CALLBACK(C2S_PAY_VIP);
 
+	BIND_CALLBACK(C2S_GET_LASTRESULT);
+
 	//////////////////////////////////////////////////////////////////////////
 	BIND_CALLBACK(C2S_NEXT_AROUND);
 	BIND_CALLBACK(C2S_APPLICATE_LEAVE);
@@ -383,6 +385,14 @@ NET_CALLBACK(C2S_GETPLAYERDATA)
 	CHECK_MSG_LOGIN(client);
 	GET_PLAYER;
 
+	comClient::Instance()->request_GOLD(player,
+		[](BASE_PLAYER* player,  long long GOLD)
+	{
+		//////////////////////////////////////////////////////////////////////////
+		player->_GOLD = GOLD;
+	}
+	);
+
 	MSG_S2C_GETPLAYERDATA _msg;
 	_msg._dataLArray[0]->setNumber(player->_GOLD);
 	SEND_MSG<MSG_S2C_GETPLAYERDATA>(_msg, client);
@@ -639,3 +649,17 @@ NET_CALLBACK(C2S_PAY_VIP)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////
+NET_CALLBACK(C2S_GET_LASTRESULT)
+{
+	//////////////////////////////////////////////////////////////////////////
+	CHECK_MSG_PARAM(MSG_C2S_GET_LASTRESULT);
+	CHECK_MSG_LOGIN(client);
+	GET_PLAYER;
+
+	MSG_S2C_GET_LASTRESULT _msg;
+	_msg._dataLArray[0]->setString(player->_PLAYER_LAST_RESULT.c_str());
+	SEND_MSG<MSG_S2C_GET_LASTRESULT>(_msg, client);
+
+	return true;
+}

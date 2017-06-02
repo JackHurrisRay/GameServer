@@ -58,6 +58,7 @@
 #define JSON_ROOM_PLAYERSINFO_DATA       "room_players_info"
 #define JSON_ROOM_GAMESTATUS             "room_game_status"
 #define JSON_ROOM_APPLCATELEAVE          "room_applicate_leave"
+#define JSON_LAST_GAMERESULT             "last_gameresult"
 
 #define JSON_EX_DATA                     "extern_data"
 #define JSON_STATUS                      "STATUS"
@@ -260,5 +261,25 @@ struct MSG_S2C_PAY_VIP:
 		initializeParam(3, JSON_PLAYER_VIP, JSON_PLAYER_VIP_STARTTIME, JSON_PLAYER_IS_VIP);
 	}
 };
+
+//////////////////////////////////////////////////////////////////////////
+struct MSG_C2S_GET_LASTRESULT:
+	public BASE_PROTOCAL_MSG
+{
+	MSG_C2S_GET_LASTRESULT():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_C2S_GET_LASTRESULT)
+	{
+
+	}
+};
+
+struct MSG_S2C_GET_LASTRESULT:
+	public BASE_PROTOCAL_MSG
+{
+	MSG_S2C_GET_LASTRESULT():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_GET_LASTRESULT)
+	{
+		initializeParam(1, JSON_EX_DATA);
+	}
+};
+
 
 #endif

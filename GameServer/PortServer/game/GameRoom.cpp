@@ -414,6 +414,32 @@ int BASE_ROOM::getExDataFromApplicateLeave(std::string& _exData)
 	return _count;
 }
 
+void BASE_ROOM::getStringOfRoomResultData(std::string& _strOut)
+{
+	Json::Value _root;
+
+	_root[JSON_ROOM_RANDKEY] = _ROOM_ID_RANDFLAG;
+	_root[JSON_ROOM_CURRENT_AROUND] = _currentRound;
+
+	PLAYER_LIST _player_list;
+	getPlayersInRoom(_player_list);
+
+	for( PLAYER_LIST::iterator cell = _player_list.begin(); cell != _player_list.end(); cell++ )
+	{
+		BASE_PLAYER* _player = *cell;
+
+		Json::Value _jsonPlayer;
+		_jsonPlayer[JSON_PLAYER_NICKNAME]   = _player->_NickName;
+		_jsonPlayer[JSON_PLAYER_TOTALSCORE] = _player->_totalSCORE;
+		_jsonPlayer[JSON_PLAYER_KEY]        = _player->_KEY; 
+
+		_root[JSON_PLAYER].append(_jsonPlayer);
+	}
+
+	Json::FastWriter _writer;
+	_strOut = _writer.write(_root);
+
+}
 
 /************************************************************************/
 /*                                                                      */
@@ -837,6 +863,9 @@ void GameRooms::getRoomsByOwner(const unsigned short _player_id, ROOM_LIST& _roo
 
 void GameRooms::disbandRoomAfterGameOver(short _room_id)
 {
+	static Locker lock;
+	lock.lock();
+
 	BASE_ROOM* _room = get_room(_room_id);
 
 	if( _room != NULL )
@@ -844,9 +873,14 @@ void GameRooms::disbandRoomAfterGameOver(short _room_id)
 		PLAYER_LIST _player_list;
 		_room->getPlayersInRoom(_player_list);
 
+		std::string _last_gameresult;
+		_room->getStringOfRoomResultData(_last_gameresult);
+
 		for( PLAYER_LIST::iterator cell = _player_list.begin(); cell != _player_list.end(); cell++ )
 		{
 			BASE_PLAYER* _player = *cell;
+
+			_player->_PLAYER_LAST_RESULT = _last_gameresult;
 
 			_player->resetData();
 			_player->_ROOMID = -1;
@@ -867,5 +901,7 @@ void GameRooms::disbandRoomAfterGameOver(short _room_id)
 		_delRoom->_PLAYERS_STATUS = EPS_NONE;
 		_ALLOC_ROOM.releaseData(_delRoom);
 	}
+
+	lock.unlock();
 }
 

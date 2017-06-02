@@ -122,6 +122,8 @@ struct BASE_ROOM:
 	int  getExDataFromApplicateLeave(std::string& _exData);
 	int  getExDataFromApplicateLeave(Json::Value& _root);
 
+	void getStringOfRoomResultData(std::string& _strOut);
+
 	//////////////////////////////////////////////////////////////////////////
 	template<class T>
 	void brodcast(T msg, BASE_PLAYER* _exceptplayer = NULL)

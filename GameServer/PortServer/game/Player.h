@@ -46,6 +46,7 @@ struct BASE_PLAYER:
 
 	char                _INDEX;                                             //-1为不可用， 房间里的座位顺序
 	std::string         _PLAYER_DATA_PATH;
+	std::string         _PLAYER_LAST_RESULT;                                //最后一次游戏结果
 
 	//////////////////////////////////////////////////////////////////////////
 	void initData();

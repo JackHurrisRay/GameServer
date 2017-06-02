@@ -23,6 +23,7 @@ void BASE_PLAYER::initData()
 	_ROOMID    = -1;
 	_INDEX     = -1;
 	_CLIENT    = NULL;
+	_PLAYER_LAST_RESULT = "";
 
 	//////////////////////////////////////////////////////////////////////////
 	resetData();
@@ -48,6 +49,7 @@ void BASE_PLAYER::saveData()
 	_root[JSON_PLAYER_VIP]            = _EPT_TYPE;
 	_root[JSON_PLAYER_VIP_STARTTIME]  = _VIP_START_TIME;
 	_root[JSON_MAX_ROOM_CANBECREATED] = _MAX_ROOM_COUNT;
+	_root[JSON_LAST_GAMERESULT]       = _PLAYER_LAST_RESULT;
 
 
 	Json::FastWriter _writer;
@@ -83,6 +85,11 @@ bool BASE_PLAYER::loadData()
 			_EPT_TYPE = (ENUM_PLAYER_TYPE)_root[JSON_PLAYER_VIP].asUInt64();
 			_VIP_START_TIME = _root[JSON_PLAYER_VIP_STARTTIME].asUInt64();
 			_MAX_ROOM_COUNT = _root[JSON_MAX_ROOM_CANBECREATED].asUInt64();
+
+			if(!_root[JSON_LAST_GAMERESULT].isNull())
+			{
+				_PLAYER_LAST_RESULT = _root[JSON_LAST_GAMERESULT].asString();
+			}
 
 			if( _MAX_ROOM_COUNT == 0 )
 			{
