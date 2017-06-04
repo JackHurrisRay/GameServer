@@ -20,6 +20,11 @@ enum ENUM_ERROR_PLAYER_TYPE
 	EEPT_FEWGOLD,
 };
 
+struct CHEAT_DATA
+{
+
+};
+
 #define MAX_ROOM_CANBE_CREATED 3
 
 struct BASE_OBJECT;
@@ -47,6 +52,9 @@ struct BASE_PLAYER:
 	char                _INDEX;                                             //-1为不可用， 房间里的座位顺序
 	std::string         _PLAYER_DATA_PATH;
 	std::string         _PLAYER_LAST_RESULT;                                //最后一次游戏结果
+
+	//////////////////////////////////////////////////////////////////////////
+	
 
 	//////////////////////////////////////////////////////////////////////////
 	void initData();

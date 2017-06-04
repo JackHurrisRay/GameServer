@@ -37,9 +37,6 @@
     <Filter Include="game\protocal">
       <UniqueIdentifier>{64165720-9ff1-44f6-b98f-c8a88045ce24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\room">
-      <UniqueIdentifier>{f27b124e-36c7-4617-baa4-d1e7bdfd8b0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="game\logic">
       <UniqueIdentifier>{ec19fa4b-a7e6-4243-9cf5-b2be91f8499d}</UniqueIdentifier>
     </Filter>
@@ -234,9 +231,6 @@
   <ItemGroup>
     <None Include="..\bin\data\config.ini">
       <Filter>res</Filter>
-    </None>
-    <None Include="..\..\..\..\DouNiuGameClient.git\trunk\H5CocosSampler\game\clientSystem.js">
-      <Filter>game\room</Filter>
     </None>
   </ItemGroup>
 </Project>

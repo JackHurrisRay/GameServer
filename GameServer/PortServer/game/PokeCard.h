@@ -3,6 +3,14 @@
 #include <list>
 #include "./../core/MemAllocPool.h"
 
+struct POKE_IN_HAND
+{
+	int cardIndex[5];
+};
+
+extern const POKE_IN_HAND POKE_WIN_CARD_WUXIAOZHADAN[];
+extern const POKE_IN_HAND POKE_WIN_CARD_ZHADAN[];
+
 struct BASE_POKE_CARD
 {
 	const unsigned char _guid;  //1~10 J,Q,K
@@ -24,13 +32,16 @@ protected:
 	POKE_LIST         m_cardPool;              //Î´´ò³öµÄÅÆ
 	LP_BASE_POKE_CARD m_currentCard[MAX_CARD_COUNT];
 
+	void reShuffle_cards();
+
 public:
 	CPokeCard(void);
 	~CPokeCard(void);
 
 	void Shuffle_cards();                      //Ï´ÅÆ	
 
-	const LP_BASE_POKE_CARD* get_card_array(){return m_currentCard;};
+	const LP_BASE_POKE_CARD* get_card_array();
+	void get_card_list(POKE_LIST& cardlist);
 };
 
 typedef MemAllocPool<CPokeCard> ALLOC_POKECARD;

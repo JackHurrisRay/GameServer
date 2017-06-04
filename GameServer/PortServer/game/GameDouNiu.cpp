@@ -55,7 +55,14 @@ bool check_wuxiaoniu(BASE_POKE_CARD** _cardArray, BASE_POKE_CARD*& _flagCard)
 {
 	bool check = false;
 
-	if( (_cardArray[0]->_score + _cardArray[1]->_score + _cardArray[2]->_score + _cardArray[3]->_score + _cardArray[4]->_score) < 10 )
+	if( 
+		(_cardArray[0]->_score + _cardArray[1]->_score + _cardArray[2]->_score + _cardArray[3]->_score + _cardArray[4]->_score) <= 10 &&
+		_cardArray[0]->_score < 5 &&
+		_cardArray[1]->_score < 5 &&
+		_cardArray[2]->_score < 5 &&
+		_cardArray[3]->_score < 5 &&
+		_cardArray[4]->_score < 5 		
+		)
 	{
 		_flagCard = get_card_of_max_value(_cardArray);
 		check = true;

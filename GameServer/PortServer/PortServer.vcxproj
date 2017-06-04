@@ -382,7 +382,6 @@
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\DouNiuGameClient.git\trunk\H5CocosSampler\game\clientSystem.js" />
     <None Include="..\bin\data\config.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -58,6 +58,10 @@
 #define JSON_ROOM_PLAYERSINFO_DATA       "room_players_info"
 #define JSON_ROOM_GAMESTATUS             "room_game_status"
 #define JSON_ROOM_APPLCATELEAVE          "room_applicate_leave"
+
+#define JSON_ROOM_START_TIME             "room_start_time"
+#define JSON_ROOM_END_TIME               "room_end_time"
+
 #define JSON_LAST_GAMERESULT             "last_gameresult"
 
 #define JSON_EX_DATA                     "extern_data"

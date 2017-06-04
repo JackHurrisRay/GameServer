@@ -4,6 +4,7 @@
 #include "./../game/message_douniu.h"
 #include "json/json.h"
 #include <time.h>
+#include "./../network/comClient.h"
 
 extern unsigned int GET_RAND();
 
@@ -418,8 +419,10 @@ void BASE_ROOM::getStringOfRoomResultData(std::string& _strOut)
 {
 	Json::Value _root;
 
-	_root[JSON_ROOM_RANDKEY] = _ROOM_ID_RANDFLAG;
+	_root[JSON_ROOM_RANDKEY]        = _ROOM_ID_RANDFLAG;
 	_root[JSON_ROOM_CURRENT_AROUND] = _currentRound;
+	_root[JSON_ROOM_START_TIME]     = _start_time;
+	_root[JSON_ROOM_END_TIME]       = time(NULL);
 
 	PLAYER_LIST _player_list;
 	getPlayersInRoom(_player_list);
@@ -876,6 +879,9 @@ void GameRooms::disbandRoomAfterGameOver(short _room_id)
 		std::string _last_gameresult;
 		_room->getStringOfRoomResultData(_last_gameresult);
 
+		comClient::Instance()->request_GAME_Record(_last_gameresult);
+
+		//////////////////////////////////////////////////////////////////////////
 		for( PLAYER_LIST::iterator cell = _player_list.begin(); cell != _player_list.end(); cell++ )
 		{
 			BASE_PLAYER* _player = *cell;
