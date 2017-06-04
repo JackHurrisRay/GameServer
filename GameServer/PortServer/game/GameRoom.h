@@ -33,6 +33,7 @@ enum ENUM_ROOM_ERROR
 	ERE_ROOM_LIMITRIGHT,                      //房间权限问题
 	ERE_ROOM_WRONG_STATUS,                    //房间错误的状态
 	ERE_ROOM_MAX_COUNT_LIMITED,               //开房数目收到限制
+	ERE_ROOM_UNKNOWN_THROW       = 9999,      //无效消息返回，直接丢弃
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -171,6 +172,7 @@ public:
 	//创建房间 0:成功创建房间 1:金币不足无法创建房间 2:条件不足无法创建房间 3:房间已满，无法创建房间       >0xFF:其他原因无法创建房间
 	ENUM_ROOM_ERROR createRoom(BASE_PLAYER* _player, BASE_ROOM*& _room);
 	//进入房间 0:成功进入房间 1:房间已满，无法进入房间 2:条件不足无法进入房间 3:已经在房间内，无法进入新房间 0xF:房间不存在无法进入 >0xFF:其他原因无法进入房间
+	ENUM_ROOM_ERROR enterRoom(BASE_PLAYER* _player, const char* _password, BASE_ROOM* _room);
 	ENUM_ROOM_ERROR enterRoom(int _rand_key, BASE_PLAYER* _player, const char* _password, BASE_ROOM*& _room);
 	//离开房间 0:成功离开房间 1:游戏中无法离开房间 >0xF:其他原因无法离开房间 0xF:房间不存在无法离开 >0xFF:其他原因无法离开
 	ENUM_ROOM_ERROR leaveRoom(BASE_PLAYER* _player, BASE_ROOM*& _room);

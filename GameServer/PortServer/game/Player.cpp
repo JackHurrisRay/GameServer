@@ -309,6 +309,23 @@ BASE_PLAYER* Players::get_player(unsigned short _uid)
 	return _player;
 }
 
+BASE_PLAYER* Players::get_player_byKey(const char* _key)
+{
+	PLAYER_LOCK _lock;
+	BASE_PLAYER* _player = NULL;
+
+	for( int i=0; i<MAX_PLAYER_LIMIT; i++ )
+	{
+		if( m_players[i] != NULL && strcmpi(m_players[i]->_KEY, _key) == 0 )
+		{
+			_player = m_players[i];
+			break;
+		}
+	}
+
+	return _player;
+}
+
 int Players::getPlayerCountOnLine()
 {
 	return _ALLOC_PLAYER.getUsedCound();

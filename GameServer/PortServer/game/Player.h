@@ -101,7 +101,10 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	void delete_player(unsigned short _uid);
+	
 	BASE_PLAYER* get_player(unsigned short _uid);
+	BASE_PLAYER* get_player_byKey(const char* _key);
+
 	int getPlayerCountOnLine();
 };
 

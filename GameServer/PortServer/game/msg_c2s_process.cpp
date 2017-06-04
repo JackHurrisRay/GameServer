@@ -42,6 +42,8 @@ CProtocalFactory::Instance()->bind_func(ENUM_GAME_PROTOCAL::EGP_##X, &NET_CALLBA
 
 	BIND_CALLBACK(C2S_DISBAND_ROOM_BY_OWNER);
 	BIND_CALLBACK(C2S_REQUEST_ROOMLIST);
+	BIND_CALLBACK(C2S_FINDINVITER_INROOM);
+
 	BIND_CALLBACK(C2S_PAY_VIP);
 
 	BIND_CALLBACK(C2S_GET_LASTRESULT);
@@ -581,6 +583,79 @@ NET_CALLBACK(C2S_REQUEST_ROOMLIST)
 	}
 
 	SEND_MSG<MSG_S2C_REQUEST_ROOMLIST>(_msg, client);
+
+	return true;
+}
+
+NET_CALLBACK(C2S_FINDINVITER_INROOM)
+{
+	//////////////////////////////////////////////////////////////////////////
+	CHECK_MSG_PARAM(MSG_C2S_FINDINVITER_INROOM);
+	CHECK_MSG_LOGIN(client);
+	GET_PLAYER;
+
+	//////////////////////////////////////////////////////////////////////////
+	const std::string _playerID = data[JSON_PLAYER_KEY].asString();
+
+	BASE_PLAYER* _inviterPlayer =
+	Players::Instance()->get_player_byKey(_playerID.c_str());
+
+	BASE_ROOM* _room = NULL;
+	if( _inviterPlayer )
+	{
+		short _room_id =
+		_inviterPlayer->_ROOMID;
+
+		_room =
+		GameRooms::Instance()->get_room(_room_id);
+	}
+
+	if( _room != NULL )
+	{
+		ENUM_ROOM_ERROR _hr = GameRooms::Instance()->enterRoom(player, "0", _room);
+
+		if( _hr == ERE_ROOM_OK )
+		{
+			MSG_S2C_ENTER_ROOM _msg;
+			_msg._dataLArray[0]->setNumber(_room->_ROOM_ID);
+			_msg._dataLArray[1]->setNumber(_room->_ROOM_ID_RANDFLAG);
+			_msg._dataLArray[2]->setNumber(player->_PLAYER_ID);
+			_msg._dataLArray[3]->setString(player->_KEY);
+			_msg._dataLArray[4]->setString(player->_NickName);
+			_msg._dataLArray[5]->setNumber(player->_INDEX);
+
+			_msg._dataLArray[8]->setNumber(player->_status);
+
+			//////////////////////////////////////////////////////////////////////////
+			_room->brodcast<MSG_S2C_ENTER_ROOM>(_msg, player);
+
+			//////////////////////////////////////////////////////////////////////////
+			_msg._dataLArray[6]->setNumber(_room->_baseScore);
+			_msg._dataLArray[7]->setNumber(_room->_PLAYERS_STATUS);
+
+			std::string _room_player_info;
+			if( _room->getPlayersInfo(_room_player_info) )
+			{
+				_msg._dataLArray[9]->setString(_room_player_info.c_str());
+			}
+
+			SEND_MSG<MSG_S2C_ENTER_ROOM>(_msg, client);
+		}
+		else
+		{
+			MSG_S2C_ENTER_ROOM _msg;
+			_msg._error_code = PROTOCAL_ERROR_ROOM;
+			_msg._error_ex   = _hr;
+			SEND_MSG<MSG_S2C_ENTER_ROOM>(_msg, client);
+		}
+	}
+	else
+	{
+		MSG_S2C_ENTER_ROOM _msg;
+		_msg._error_code = PROTOCAL_ERROR_ROOM;
+		_msg._error_ex   = ERE_ROOM_UNKNOWN_THROW;
+		SEND_MSG<MSG_S2C_ENTER_ROOM>(_msg, client);
+	}
 
 	return true;
 }

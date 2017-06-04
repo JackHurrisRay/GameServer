@@ -247,6 +247,26 @@ struct MSG_S2C_REQUEST_PLAYERINROOM:
 	}
 };
 
+
+//////////////////////////////////////////////////////////////////////////
+struct MSG_C2S_FINDINVITER_INROOM:
+	public BASE_PROTOCAL_MSG
+{
+	MSG_C2S_FINDINVITER_INROOM():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_C2S_FINDINVITER_INROOM)
+	{
+		initializeParam(1, JSON_PLAYER_KEY);
+	}
+};
+
+struct MSG_S2C_FINDINVITER_INROOM:
+	public BASE_PROTOCAL_MSG
+{
+	MSG_S2C_FINDINVITER_INROOM():BASE_PROTOCAL_MSG(ENUM_GAME_PROTOCAL::EGP_S2C_FINDINVITER_INROOM)
+	{
+		initializeParam(1, JSON_ROOM_RANDKEY);
+	}
+};
+
 //////////////////////////////////////////////////////////////////////////
 struct MSG_C2S_PAY_VIP:
 	public BASE_PROTOCAL_MSG
