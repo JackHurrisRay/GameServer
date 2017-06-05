@@ -88,7 +88,7 @@ DWORD WINAPI thread_comWorker( LPVOID lpParam )
 
 		}
 
-		Sleep(3000);
+		Sleep(1000);
 	}
 
 	CloseHandle(comClient::Instance()->_threadEvent);
@@ -145,8 +145,14 @@ bool comClient::SendAndRecvData(Json::Value& _send, std::function<void(Json::Val
 		Json::Value  _root;
 		Json::Reader _reader;
 
-		if( _reader.parse(_jsonValue.c_str(), _root) )
+		if( _reader.parse(_jsonValue.c_str(), _root) && !_root["protocal"].isNull() )
 		{
+
+			if( _root["protocal"].asUInt64() != 2015 )
+			{
+				GAME_LOG("com server recv:"<<_jsonValue.c_str(), true);
+			}
+
 			if( _callback_recv )
 			{
 				_callback_recv(_root);
