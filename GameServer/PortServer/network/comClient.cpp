@@ -145,7 +145,9 @@ bool comClient::SendAndRecvData(Json::Value& _send, std::function<void(Json::Val
 		Json::Value  _root;
 		Json::Reader _reader;
 
-		if( _reader.parse(_jsonValue.c_str(), _root) && !_root["protocal"].isNull() )
+		if( _reader.parse(_jsonValue.c_str(), _root) && !_root["protocal"].isNull() && 
+			_root["protocal"].asUInt64() < 5000
+			)
 		{
 
 			if( _root["protocal"].asUInt64() != 2015 )
@@ -158,6 +160,12 @@ bool comClient::SendAndRecvData(Json::Value& _send, std::function<void(Json::Val
 				_callback_recv(_root);
 				_check = true;
 			}
+		}
+		else
+		{
+			_isconn = false;
+			closesocket(_socket);
+			_socket = 0;	
 		}
 	}
 	else
@@ -392,7 +400,7 @@ void comClient::request_GAME_Record(std::string _recordStr)
 		void recv(Json::Value _recv)
 		{
 			const int _protocal = _recv[JSON_PROTOCAL].asUInt64();
-			const int _status   = _recv[JSON_STATUS].asUInt64();
+			const int _status   = _recv[JSON_STATUS].asInt();
 
 			if( _protocal == ENUM_MSG_TYPE::ENUM_S2C_RESULT_RECORD && _status == 0 )
 			{

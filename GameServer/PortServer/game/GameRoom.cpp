@@ -888,7 +888,10 @@ void GameRooms::disbandRoomAfterGameOver(short _room_id)
 		std::string _last_gameresult;
 		_room->getStringOfRoomResultData(_last_gameresult);
 
-		comClient::Instance()->request_GAME_Record(_last_gameresult);
+		if( _room->_currentRound > 1 )
+		{
+			comClient::Instance()->request_GAME_Record(_last_gameresult);
+		}
 
 		//////////////////////////////////////////////////////////////////////////
 		for( PLAYER_LIST::iterator cell = _player_list.begin(); cell != _player_list.end(); cell++ )
