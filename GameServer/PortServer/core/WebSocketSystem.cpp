@@ -34,9 +34,12 @@ int WebSocketSystem::checkHands_c2s(char* _buff, std::string& _output)
 	std::string request;
 
 	std::getline(s, request);
-	if (request[request.size()-1] == '\r') {
+	if( request.size() > 1 && request[request.size()-1] == '\r')
+	{
 		request.erase(request.end()-1);
-	} else {
+	}
+	else
+	{
 		return -1;
 	}
 
